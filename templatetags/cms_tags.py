@@ -1,8 +1,9 @@
 from django import template
+from django.conf import settings
 
 import re
 
-from cms.models import *
+from mingus.models import *
 
 image_match_regex = re.compile(r'{{\s*IMAGE\[[\w-]*\]\s*}}')
 slug_match_regex = re.compile(r'\[([\w-]*)\]')
@@ -10,7 +11,7 @@ slug_match_regex = re.compile(r'\[([\w-]*)\]')
 register = template.Library()
 
 @register.filter
-def add_images(article, lang):
+def add_images(article, lang=settings.LANGUAGE_CODE):
     '''
     Gets the translated body text and goes through it resolving {{ IMAGE[<SLUG>] }} into the correct url for the image
     with slug=<SLUG>
