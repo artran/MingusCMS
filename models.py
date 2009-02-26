@@ -4,7 +4,7 @@ from django.template.defaultfilters import slugify
 
 from datetime import datetime
 
-from cms.middleware import threadlocals
+from mingus.middleware import threadlocals
 
 import random
 
@@ -31,8 +31,8 @@ class Section(models.Model):
     name = models.CharField(max_length=50, unique=True)
     live = models.BooleanField(default=False)
     slug = models.SlugField(prepopulate_from=('name',), help_text='Auto generated')
-    block_img = models.ImageField(upload_to='block-images', help_text='800 x 279 image')
-    thumbnail_img = models.ImageField(upload_to='icons', help_text='85 x 85 circular images')
+    block_img = models.ImageField(upload_to='block-images', blank=True)
+    thumbnail_img = models.ImageField(upload_to='icons', blank=True)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
     
@@ -88,6 +88,7 @@ class Article(models.Model):
     style = models.TextField('Extra styling', blank=True)
     live_from = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live immediately')
     live_to = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live until forever')
+    feature = models.BooleanField('Featured article', default=False, help_text='Highlighted on section menus')
     home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section')
     created_at = models.DateTimeField(blank=True, editable=False)
     created_by = models.ForeignKey(User, editable=False)
