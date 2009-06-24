@@ -15,8 +15,10 @@ def section(request, slug):
     articles = live_articles.filter(home_page=True).order_by('?')
     if articles.count() > 0:
         the_article = articles[0]
-    else:
+    elif live_articles.count() > 0:
         the_article = live_articles.order_by('?')[0]
+    else:
+        raise Http404
     return article(request, the_article.slug)
 
 def article(request, slug):

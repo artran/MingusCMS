@@ -8,6 +8,7 @@ class SectionImageInline(admin.StackedInline):
     model = SectionImage
 
 class SectionAdmin(admin.ModelAdmin):
+    save_on_top = True
     prepopulated_fields = {'slug': ('name',)}
     inlines = (SectionImageInline,)
 

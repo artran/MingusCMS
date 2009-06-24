@@ -42,10 +42,10 @@ class Section(models.Model):
     def get_random_image_url(self):
         # If there are no alternate images or the random function picks 0 from an appropriately sized range
         if self.images.count() == 0 or random.randrange(self.images.count()+1) == 0:
-            return self.get_block_img_url()
+            return self.block_img.url
         else:
             image = self.images.order_by('?')[0]
-            return image.get_image_url()
+            return image.image.url
     
     def get_i18n_name(self, language_code):
         name = self.name
@@ -185,18 +185,12 @@ class Image(models.Model):
 
 class ArticleImage(Image):
     article = models.ForeignKey(Article, related_name='images')
-
-    # I've comented this out after creation of the tables because it breaks the inline-editing in Articles.
-    # As the uniqueness test is done in the db this shouldn't be an issue.
-    #class Meta:
-    #    unique_together = (('slug', 'article'),)
+    class Meta:
+        unique_together = (('slug', 'article'),)
 
 class SectionImage(Image):
     section = models.ForeignKey(Section, related_name='images')
-    thumbnail_img = models.ImageField(upload_to='icons', help_text='85 x 85 circular images')
-
-    # I've comented this out after creation of the tables because it breaks the inline-editing in Sections.
-    # As the uniqueness test is done in the db this shouldn't be an issue.
-    #class Meta:
-    #    unique_together = (('slug', 'section'),)
+    thumbnail_img = models.ImageField(upload_to='icons', blank=True)
+    class Meta:
+        unique_together = (('slug', 'section'),)
     
