@@ -5,7 +5,10 @@ from django.template import RequestContext
 from mingus.models import *
 
 def index(request):
-    first_section = Section.live_objects.all()[0]
+    try:
+        first_section = Section.live_objects.all()[0]
+    except IndexError:
+        raise Http404
     return section(request, first_section.slug)
 
 def section(request, slug):
