@@ -1,11 +1,21 @@
 from django.contrib import admin
 from mingus.models import *
 
+from datetime import datetime
+
 class ArticleImageInline(admin.StackedInline):
     model = ArticleImage
+    def save_model(self, request, img, form, change):
+        if not change:
+            img.created_by = request.user
+        img.save()
 
 class SectionImageInline(admin.StackedInline):
     model = SectionImage
+    def save_model(self, request, img, form, change):
+        if not change:
+            img.created_by = request.user
+        img.save()
 
 class SectionAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -24,6 +34,12 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     inlines = (ArticleImageInline,)
     filter_horizontal = ('related',)
+    def save_model(self, request, article, form, change):
+        if not change:
+            article.created_by = request.user
+        article.last_edited_by = request.user
+        article.last_edited_at = datetime.now()
+        article.save()
 
 class TransArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'article', 'lang')

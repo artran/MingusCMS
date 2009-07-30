@@ -4,8 +4,6 @@ from django.template.defaultfilters import slugify
 
 from datetime import datetime
 
-from mingus.middleware import threadlocals
-
 import random
 
 class LiveSectionManager(models.Manager):
@@ -84,7 +82,8 @@ class Article(models.Model):
     live_to = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live until forever')
     feature = models.BooleanField('Featured article', default=False, help_text='Highlighted on section menus')
     home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section')
-    created_at = models.DateTimeField(blank=True, editable=False)
+    created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
+     # The next three will be filled automatically in the admin interface. Outside the admin you still need to populate them.
     created_by = models.ForeignKey(User, editable=False)
     last_edited_at = models.DateTimeField(blank=True, editable=False)
     last_edited_by = models.ForeignKey(User, related_name='edited_articles', editable=False)
@@ -122,18 +121,6 @@ class Article(models.Model):
         'Returns True if now is between live_from and live_to and the Section is live'
         now = datetime.now()
         return self.section.live == True and (self.live_from is None or self.live_from < now) and (self.live_to is None or self.live_to > now)
-    
-    # Set the creator and last_edited_by when appropriate
-    def save(self):
-        # If the object already existed, it will already have an id
-        if not self.id:
-            # This is a new object, set the creator 
-            self.created_by = threadlocals.get_current_user()
-            self.created_at = datetime.now()
-        # All articles need the edited by and edited at fields setting
-        self.last_edited_by = threadlocals.get_current_user()
-        self.last_edited_at = datetime.now()
-        super(Article, self).save()
         
     def __unicode__(self):
         if self.is_live():
@@ -159,17 +146,11 @@ class Image(models.Model):
     height = models.IntegerField(null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
     image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
-    created_at = models.DateTimeField(blank=True, editable=False)
-    created_by = models.ForeignKey(User, editable=False)
+    created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
+    created_by = models.ForeignKey(User, editable=False) # This will be filled automatically in the admin interface.
     
-    # Set the creator fields when appropriate
+    # Set a slug if one wasn't provided.
     def save(self):
-        # If the object already existed, it will already have an id
-        if not self.id:
-            # This is a new object, set the creator 
-            self.created_by = threadlocals.get_current_user()
-            self.created_at = datetime.now()
-        
         # Set a slug if one isn't already set
         if not self.slug:
             self.slug = slugify(self.name)
