@@ -1,5 +1,6 @@
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import models
 from django.template.defaultfilters import slugify
 
 from datetime import datetime
@@ -25,11 +26,17 @@ class Language(models.Model):
         return u'%s (%s)' % (self.name, self.code)
 
 class Section(models.Model):
+    try:
+        block_img_help_text = settings.SECTION_BLOCK_IMG_HELP
+        thumb_img_help_text = settings.SECTION_THUMB_IMG_HELP
+    except AttributeError:
+        block_img_help_text = 'Configure help text in settings.SECTION_BLOCK_IMG_HELP'
+        thumb_img_help_text = 'Configure help text in settings.SECTION_THUMB_IMG_HELP'
     name = models.CharField(max_length=50, unique=True)
     live = models.BooleanField(default=False)
     slug = models.SlugField(help_text='Auto generated')
-    block_img = models.ImageField(upload_to='block-images', blank=True)
-    thumbnail_img = models.ImageField(upload_to='icons', blank=True)
+    block_img = models.ImageField(upload_to='block-images', blank=True, help_text=block_img_help_text)
+    thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=thumb_img_help_text)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
     
@@ -140,12 +147,16 @@ class TransArticle(models.Model):
         return u'%s (%s, %s)' % (self.title, self.article.title, self.lang.name)
 
 class Image(models.Model):
+    try:
+        img_help_text = settings.IMG_HELP
+    except AttributeError:
+        img_help_text = 'Configure help text in settings.IMG_HELP'
     name = models.CharField(max_length=30)
     slug = models.SlugField(blank=True, help_text='Auto generated but can be overridden')
     caption = models.CharField(max_length=50, blank=True)
     height = models.IntegerField(null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
-    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
+    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height', help_text=img_help_text)
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
     created_by = models.ForeignKey(User, editable=False) # This will be filled automatically in the admin interface.
     
@@ -170,8 +181,12 @@ class ArticleImage(Image):
         unique_together = (('slug', 'article'),)
 
 class SectionImage(Image):
+    try:
+        img_help_text = settings.SECTION_ALT_THUMB_IMG_HELP
+    except AttributeError:
+        img_help_text = 'Configure help text in settings.SECTION_ALT_THUMB_IMG_HELP'
     section = models.ForeignKey(Section, related_name='images')
-    thumbnail_img = models.ImageField(upload_to='icons', blank=True)
+    thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=img_help_text)
     class Meta:
         unique_together = (('slug', 'section'),)
     
