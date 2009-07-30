@@ -87,8 +87,8 @@ class Article(models.Model):
     style = models.TextField('Extra styling', blank=True)
     live_from = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live immediately')
     live_to = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live until forever')
-    feature = models.BooleanField('Featured article', default=False, help_text='Highlighted on section menus')
-    home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section')
+    feature = models.BooleanField('Featured article', default=False, help_text='Sorts higher than non-feature articles in "in_this_section" context variable. Also given in "featured" context variable')
+    home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section. Sorts ahead of featured articles in "in_this_section" context variable.')
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
      # The next three will be filled automatically in the admin interface. Outside the admin you still need to populate them.
     created_by = models.ForeignKey(User, editable=False)
