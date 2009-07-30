@@ -31,11 +31,15 @@ def article(request, slug):
     
     sections = Section.live_objects.filter(parent__isnull=True)
     live_articles = Article.live_objects.all()
+    in_this_section = Article.live_objects.filter(section=article.section).order_by('-home_page', '-feature', 'title')
+    featured = in_this_section.filter(feature=True)
     
     related = article.get_live_related()
     
     active = article.section
     while active.parent:
         active = active.parent
-    return render_to_response('cms/article.html', {'sections': sections, 'article': article, 'active_section': active,
-                        'related': related, 'in_this_section': live_articles, 'session': request.session, 'lang': request.LANGUAGE_CODE})
+    return render_to_response('mingus/article.html', {'sections': sections, 'article': article, 'active_section': active,
+                                                   'related': related, 'in_this_section': in_this_section,
+                                                   'featured': featured, 'session': request.session,
+                                                   'lang': request.LANGUAGE_CODE})

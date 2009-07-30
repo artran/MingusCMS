@@ -30,7 +30,7 @@ class ArticleAdmin(admin.ModelAdmin):
     save_on_top = True
     list_filter = ('section', 'created_by')
     search_fields = ('title',)
-    list_display = ('title', 'live_from', 'live_to', 'is_live')
+    list_display = ('title', 'section', 'live_from', 'live_to', 'is_live')
     prepopulated_fields = {'slug': ('title',)}
     inlines = (ArticleImageInline,)
     filter_horizontal = ('related',)
