@@ -147,16 +147,12 @@ class TransArticle(models.Model):
         return u'%s (%s, %s)' % (self.title, self.article.title, self.lang.name)
 
 class Image(models.Model):
-    try:
-        img_help_text = settings.IMG_HELP
-    except AttributeError:
-        img_help_text = 'Configure help text in settings.IMG_HELP'
     name = models.CharField(max_length=30)
     slug = models.SlugField(blank=True, help_text='Auto generated but can be overridden')
     caption = models.CharField(max_length=50, blank=True)
     height = models.IntegerField(null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
-    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height', help_text=img_help_text)
+    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
     created_by = models.ForeignKey(User, editable=False) # This will be filled automatically in the admin interface.
     
@@ -179,6 +175,11 @@ class ArticleImage(Image):
     article = models.ForeignKey(Article, related_name='images')
     class Meta:
         unique_together = (('slug', 'article'),)
+try:
+    img_help_text = settings.ARTICLE_IMG_HELP
+except AttributeError:
+    img_help_text = 'Configure help text in settings.ARTICLE_IMG_HELP'
+ArticleImage._meta.get_field('image').help_text = img_help_text
 
 class SectionImage(Image):
     try:
@@ -189,4 +190,8 @@ class SectionImage(Image):
     thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=img_help_text)
     class Meta:
         unique_together = (('slug', 'section'),)
-    
+try:
+    img_help_text = settings.SECTION_ALT_IMG_HELP
+except AttributeError:
+    img_help_text = 'Configure help text in settings.SECTION_ALT_IMG_HELP'
+SectionImage._meta.get_field('image').help_text = img_help_text
