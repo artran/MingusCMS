@@ -19,6 +19,7 @@ class LiveArticleManager(models.Manager):
         return super(LiveArticleManager, self).get_query_set().extra(where=[Article.ARTICLE_LIVE_TEST], params=[now, now]).filter(section__live=True)
 
 class Language(models.Model):
+    '''Map ISO 639-1 codes to a friendly name.'''
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=2, help_text='Use the ISO 639-1 2-letter language code (see wikipedia)')
 
