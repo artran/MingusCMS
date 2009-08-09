@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
+from django.test.client import Client
 
 import unittest
 
@@ -83,3 +84,15 @@ class LiveArticleTestCase(unittest.TestCase):
         self.failIf(nl4 in live_arts)
         self.failUnless(l1 in live_arts)
         self.failUnless(l2 in live_arts)
+        
+        # Test for 404 on non-existant and non-live
+        client = Client()
+        response = client.get('/articles/article/doesnotexist/')
+        self.failUnless(response.status_code == 404, 'Got %s for non-existant page.' % response.status_code)
+        
+        response = client.get('/articles/article/%s/' % nl1.slug)
+        self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
+        
+        # Check for 200 on existing page
+        response = client.get('/articles/article/%s/' % l1.slug)
+        self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
