@@ -19,7 +19,20 @@ class LiveArticleManager(models.Manager):
         return super(LiveArticleManager, self).get_query_set().extra(where=[Article.ARTICLE_LIVE_TEST], params=[now, now]).filter(section__live=True)
 
 class Language(models.Model):
-    '''Map ISO 639-1 codes to a friendly name.'''
+    '''
+    Map ISO 639-1 codes to a friendly name.
+    
+    >>> en = Language(name='English', code='en')
+    >>> fr = Language(name='French', code='fr')
+    >>> en.save()
+    >>> fr.save()
+    >>> en
+    <Language: English (en)>
+    >>> Language.objects.get(code='en')
+    <Language: English (en)>
+    >>> Language.objects.count()
+    2
+    '''
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=2, help_text='Use the ISO 639-1 2-letter language code (see wikipedia)')
 
@@ -91,7 +104,7 @@ class Article(models.Model):
     feature = models.BooleanField('Featured article', default=False, help_text='Sorts higher than non-feature articles in "in_this_section" context variable. Also given in "featured" context variable')
     home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section. Sorts ahead of featured articles in "in_this_section" context variable.')
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
-     # The next three will be filled automatically in the admin interface. Outside the admin you still need to populate them.
+    # The next three will be filled automatically in the admin interface. Outside the admin you still need to populate them.
     created_by = models.ForeignKey(User, editable=False)
     last_edited_at = models.DateTimeField(blank=True, editable=False)
     last_edited_by = models.ForeignKey(User, related_name='edited_articles', editable=False)
