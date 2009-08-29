@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse
-from django.test.client import Client
+from django.test import TestCase
 
 import unittest
 
 from mingus.models import *
 
-class LiveArticleTestCase(unittest.TestCase):
+class LiveArticleTestCase(TestCase):
     def setUp(self):
         sec_not_live = Section(name='test not live', live=False, slug='test-not-live', sort=10)
         sec_not_live.save()
@@ -87,27 +87,24 @@ class LiveArticleTestCase(unittest.TestCase):
         self.failUnless(l2 in live_arts)
         
         # Test for 404 on non-existant and non-live
-        client = Client()
-        response = client.get('/articles/article/doesnotexist/')
+        response = self.client.get('/articles/article/doesnotexist/')
         self.failUnless(response.status_code == 404, 'Got %s for non-existant page.' % response.status_code)
         
-        response = client.get('/articles/article/%s/' % nl1.slug)
+        response = self.client.get('/articles/article/%s/' % nl1.slug)
         self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
         
         # Check for 200 on existing page
-        response = client.get('/articles/article/%s/' % l1.slug)
+        response = self.client.get('/articles/article/%s/' % l1.slug)
         self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
 
-class SecureArticleTestCase(unittest.TestCase):
+class SecureArticleTestCase(TestCase):
     def setUp(self):
         group = Group(name='group-secure')
         group.save()
 
-        insec_user = User(username='user-insecure', password='password')
-        insec_user.save()
+        insec_user = User.objects.create_user('user-insecure', 'insecure@artran.co.uk', 'password')
 
-        sec_user = User(username='user-secure', password='password')
-        sec_user.save()
+        sec_user = User.objects.create_user('user-secure', 'secure@artran.co.uk', 'password')
         sec_user.groups.add(group)
         sec_user.save()
 
@@ -117,7 +114,7 @@ class SecureArticleTestCase(unittest.TestCase):
         secure_sec.save()
 
         insecure_sec = Section(name='test insecure', live=True, slug='section-insecure', sort=10)
-        secure_sec.save()
+        insecure_sec.save()
 
         now = datetime.now()
         sec_art = Article(title='sec_art', body='', slug='sec_art',
@@ -125,6 +122,12 @@ class SecureArticleTestCase(unittest.TestCase):
                         last_edited_by=sec_user, last_edited_at=now,
                         section=secure_sec)
         sec_art.save()
+
+        insec_art = Article(title='insec_art', body='', slug='insec_art',
+                        created_by=sec_user, created_at=now,
+                        last_edited_by=sec_user, last_edited_at=now,
+                        section=insecure_sec)
+        insec_art.save()
 
     def tearDown(self):
         Article.objects.all().delete()
@@ -138,8 +141,7 @@ class SecureArticleTestCase(unittest.TestCase):
         url = reverse('mingus.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
-        client = Client()
-        response = client.get(url)
+        response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         self.failIf((secure_sec in response.context['sections']),
                 'Sections contained secure section for unauth user')
@@ -150,9 +152,8 @@ class SecureArticleTestCase(unittest.TestCase):
         url = reverse('mingus.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
-        client = Client()
-        client.login(username='user-insecure', password='password')
-        response = client.get(url)
+        self.client.login(username='user-insecure', password='password')
+        response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         self.failIf((secure_sec in response.context['sections']),
                 'Sections contained secure section for insecure user')
@@ -162,8 +163,7 @@ class SecureArticleTestCase(unittest.TestCase):
 
         art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
 
-        client = Client()
-        response = client.get(art_url)
+        response = self.client.get(art_url)
         self.failUnlessEqual(response.status_code, 404, 'Secure article returned for insecure user')
 
     def test_secure_sec(self):
@@ -172,9 +172,8 @@ class SecureArticleTestCase(unittest.TestCase):
         url = reverse('mingus.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
-        client = Client()
-        client.login(username='user-secure', password='password')
-        response = client.get(url)
+        self.client.login(username='user-secure', password='password')
+        response = self.client.get(url)
         self.failUnlessEqual(response.status_code, 200)
         self.failUnless((secure_sec in response.context['sections']),
                 'Sections did not contain secure section for secure user')
@@ -184,8 +183,8 @@ class SecureArticleTestCase(unittest.TestCase):
 
         art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
 
-        client = Client()
-        response = client.get(art_url)
+        self.client.login(username='user-secure', password='password')
+        response = self.client.get(art_url)
         self.failUnlessEqual(response.status_code, 200,
                 'Secure article not returned for secure user')
 

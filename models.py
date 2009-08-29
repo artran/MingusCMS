@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 from datetime import datetime
@@ -66,6 +67,16 @@ class Section(models.Model):
         else:
             image = self.images.order_by('?')[0]
             return image.image.url
+
+    @staticmethod
+    def get_sections_allowed_for_user(user=None):
+        if user and user.is_authenticated():
+            groups = user.groups.all().values('pk')
+            return Section.live_objects.filter(Q(allowed_groups__in=groups)
+                                               |
+                                               Q(allowed_groups__isnull=True))
+        else:
+            return Section.live_objects.filter(allowed_groups__isnull=True)
     
     def get_i18n_name(self, language_code):
         name = self.name
