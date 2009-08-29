@@ -49,7 +49,7 @@ class Section(models.Model):
     name = models.CharField(max_length=50, unique=True)
     live = models.BooleanField(default=False)
     slug = models.SlugField(help_text='Auto generated')
-    block_img = models.ImageField(upload_to='block-images', blank=True, help_text=block_img_help_text)
+    block_img = models.FileField(upload_to='block-images', blank=True, help_text=block_img_help_text)
     thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=thumb_img_help_text)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
@@ -166,7 +166,7 @@ class Image(models.Model):
     caption = models.CharField(max_length=50, blank=True)
     height = models.IntegerField(null=True, blank=True)
     width = models.IntegerField(null=True, blank=True)
-    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
+    image = models.FileField(upload_to='cms_images')
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
     created_by = models.ForeignKey(User, editable=False) # This will be filled automatically in the admin interface.
     
