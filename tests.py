@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from django.core.urlresolvers import reverse
 from django.test.client import Client
 
 import unittest
@@ -96,3 +97,95 @@ class LiveArticleTestCase(unittest.TestCase):
         # Check for 200 on existing page
         response = client.get('/articles/article/%s/' % l1.slug)
         self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
+
+class SecureArticleTestCase(unittest.TestCase):
+    def setUp(self):
+        group = Group(name='group-secure')
+        group.save()
+
+        insec_user = User(username='user-insecure', password='password')
+        insec_user.save()
+
+        sec_user = User(username='user-secure', password='password')
+        sec_user.save()
+        sec_user.groups.add(group)
+        sec_user.save()
+
+        secure_sec = Section(name='test secure', live=True, slug='section-secure', sort=20)
+        secure_sec.save()
+        secure_sec.allowed_groups.add(group)
+        secure_sec.save()
+
+        insecure_sec = Section(name='test insecure', live=True, slug='section-insecure', sort=10)
+        secure_sec.save()
+
+        now = datetime.now()
+        sec_art = Article(title='sec_art', body='', slug='sec_art',
+                        created_by=sec_user, created_at=now,
+                        last_edited_by=sec_user, last_edited_at=now,
+                        section=secure_sec)
+        sec_art.save()
+
+    def tearDown(self):
+        Article.objects.all().delete()
+        Section.objects.all().delete()
+        User.objects.all().delete()
+        Group.objects.all().delete()
+
+    def test_not_auth(self):
+        'Get the sections; secure_sec should be missing'
+
+        url = reverse('mingus.views.index')
+        secure_sec = Section.objects.get(slug='section-secure')
+
+        client = Client()
+        response = client.get(url)
+        self.failUnlessEqual(response.status_code, 200)
+        self.failIf((secure_sec in response.context['sections']),
+                'Sections contained secure section for unauth user')
+
+    def test_insecure(self):
+        'Login as user in insecure group and get the sections; secure_sec should be missing'
+
+        url = reverse('mingus.views.index')
+        secure_sec = Section.objects.get(slug='section-secure')
+
+        client = Client()
+        client.login(username='user-insecure', password='password')
+        response = client.get(url)
+        self.failUnlessEqual(response.status_code, 200)
+        self.failIf((secure_sec in response.context['sections']),
+                'Sections contained secure section for insecure user')
+
+    def test_insecure_article(self):
+        'Get an article from secure_sec; it should 404'
+
+        art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
+
+        client = Client()
+        response = client.get(art_url)
+        self.failUnlessEqual(response.status_code, 404, 'Secure article returned for insecure user')
+
+    def test_secure_sec(self):
+        'Login as user in secure group and get the sections; secure_sec should be present'
+
+        url = reverse('mingus.views.index')
+        secure_sec = Section.objects.get(slug='section-secure')
+
+        client = Client()
+        client.login(username='user-secure', password='password')
+        response = client.get(url)
+        self.failUnlessEqual(response.status_code, 200)
+        self.failUnless((secure_sec in response.context['sections']),
+                'Sections did not contain secure section for secure user')
+
+    def test_secure_article(self):
+        'Get an article from secure_sec; it should be present'
+
+        art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
+
+        client = Client()
+        response = client.get(art_url)
+        self.failUnlessEqual(response.status_code, 200,
+                'Secure article not returned for secure user')
+

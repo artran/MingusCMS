@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -53,6 +53,7 @@ class Section(models.Model):
     thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=thumb_img_help_text)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
+    allowed_groups = models.ManyToManyField(Group, blank=True)
     
     # Managers
     objects = models.Manager() # If this isn't first then non-live sections can't edited in the admin interface
