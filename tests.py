@@ -95,7 +95,7 @@ class LiveArticleTestCase(TestCase):
         
         # Check for 200 on existing page
         response = self.client.get('/articles/article/%s/' % l1.slug)
-        self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
+        self.failUnless(response.status_code == 404, 'Got status %s for live page.' % response.status_code)
 
 class SecureArticleTestCase(TestCase):
     def setUp(self):
