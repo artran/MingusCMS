@@ -221,4 +221,3 @@ try:
 except AttributeError:
     img_help_text = 'Configure help text in settings.SECTION_ALT_IMG_HELP'
 SectionImage._meta.get_field('image').help_text = img_help_text
-
