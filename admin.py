@@ -51,7 +51,7 @@ class ArticleImageAdmin(admin.ModelAdmin):
 class SectionImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
-#admin.site.register(Language)
+admin.site.register(Language)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(TransSection, TransSectionAdmin)
 admin.site.register(Article, ArticleAdmin)
