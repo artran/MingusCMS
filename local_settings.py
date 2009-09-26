@@ -41,7 +41,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'mingus.middleware.threadlocals.ThreadLocals',
 )
 
 INSTALLED_APPS = (
