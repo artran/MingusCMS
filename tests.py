@@ -9,23 +9,15 @@ import unittest
 from mingus.models import *
 
 class LiveArticleTestCase(TestCase):
-    def setUp(self):
+    def _create_default_sections(self):
+        'Create some sections for testing'
         sec_not_live = Section(name='test not live', live=False, slug='test-not-live', sort=10)
         sec_not_live.save()
         sec_live = Section(name='test live', live=True, slug='test-live', sort=20)
         sec_live.save()
     
-    def tearDown(self):
-        Section.objects.all().delete()
-    
-    def testSectionLive(self):
-        sec_not_live = Section.objects.get(slug='test-not-live')
-        sec_live = Section.objects.get(slug='test-live')
-        
-        self.failIf(sec_not_live in Section.live_objects.all())
-        self.failUnless(sec_live in Section.live_objects.all())
-    
-    def testArticleLive(self):
+    def _create_default_articles(self):
+        'Create a mix of articles for tests. Requires _create_default_sections to be run first'
         sec_not_live = Section.objects.get(slug='test-not-live')
         sec_live = Section.objects.get(slug='test-live')
         
@@ -76,29 +68,72 @@ class LiveArticleTestCase(TestCase):
                         last_edited_by=user, last_edited_at=now,
                         live_from = ten_future, section=sec_live)
         nl4.save()
-        
-        # Now the tests
-        live_arts = Article.live_objects.all()
-        self.failIf(nl1 in live_arts)
-        self.failIf(nl2 in live_arts)
-        self.failIf(nl3 in live_arts)
-        self.failIf(nl4 in live_arts)
-        self.failUnless(l1 in live_arts)
-        self.failUnless(l2 in live_arts)
-        
-        # Test for 404 on non-existant and non-live
+        return {'nl1': nl1, 'nl2': nl2, 'nl3': nl3, 'nl4': nl4, 'l1': l1, 'l2': l2}
+    
+    def tearDown(self):
+        Section.objects.all().delete()
+        Article.objects.all().delete()
+    
+    def testNoContent(self):
+        'Check 404 for the index view if the database is empty'
+        art_url = reverse('mingus.views.index')
+        response = self.client.get(art_url)
+        self.failUnless(response.status_code == 404, 'Got %s instead of 404 for empty index.' % response.status_code)
+    
+    def testNoSuchSection(self):
+        "Check 404 for a section which isn't in the db"
+        art_url = reverse('mingus.views.section', kwargs={'slug': 'doesnotexist'})
+        response = self.client.get(art_url)
+        self.failUnless(response.status_code == 404, 'Got %s instead of 404 for non-existant section.' % response.status_code)
+    
+    def testNoSuchArticle(self):
+        "Check 404 for an article which isn't in the db"
         art_url = reverse('mingus.views.article', kwargs={'slug': 'doesnotexist'})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s for non-existant page.' % response.status_code)
         
-        art_url = reverse('mingus.views.article', kwargs={'slug': nl1.slug})
-        response = self.client.get(art_url)
-        self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
+    def testSectionLive(self):
+        'Check live section is included in sections list'
+        self._create_default_sections()
+        sec_live = Section.objects.get(slug='test-live')
+        self.failUnless(sec_live in Section.live_objects.all())
+
+    def testSectionNotLive(self):
+        'Check non-live section is not included in sections list'
+        self._create_default_sections()
+        sec_not_live = Section.objects.get(slug='test-not-live')
+        self.failIf(sec_not_live in Section.live_objects.all())
+    
+    def testLiveArticlesManager(self):
+        'Check all combinations of article and section liveness work as expected'
+        self._create_default_sections()
+        articles = self._create_default_articles()
         
-        # Check for 200 on existing page
-        art_url = reverse('mingus.views.article', kwargs={'slug': l1.slug})
+        live_arts = Article.live_objects.all()
+        self.failIf(articles['nl1'] in live_arts)
+        self.failIf(articles['nl2'] in live_arts)
+        self.failIf(articles['nl3'] in live_arts)
+        self.failIf(articles['nl4'] in live_arts)
+        self.failUnless(articles['l1'] in live_arts)
+        self.failUnless(articles['l2'] in live_arts)
+    
+    def testLiveArticle(self):
+        'Check live article returns 200'
+        self._create_default_sections()
+        articles = self._create_default_articles()
+        
+        art_url = reverse('mingus.views.article', kwargs={'slug': articles['l1'].slug})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
+        
+    def testNonLiveArticle(self):
+        'Check non live article returns 404'
+        self._create_default_sections()
+        articles = self._create_default_articles()
+
+        art_url = reverse('mingus.views.article', kwargs={'slug': articles['nl1'].slug})
+        response = self.client.get(art_url)
+        self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
 
 class SecureArticleTestCase(TestCase):
     def setUp(self):
