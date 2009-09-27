@@ -87,14 +87,17 @@ class LiveArticleTestCase(TestCase):
         self.failUnless(l2 in live_arts)
         
         # Test for 404 on non-existant and non-live
-        response = self.client.get('/articles/article/doesnotexist/')
+        art_url = reverse('mingus.views.article', kwargs={'slug': 'doesnotexist'})
+        response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s for non-existant page.' % response.status_code)
         
-        response = self.client.get('/articles/article/%s/' % nl1.slug)
+        art_url = reverse('mingus.views.article', kwargs={'slug': nl1.slug})
+        response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
         
         # Check for 200 on existing page
-        response = self.client.get('/articles/article/%s/' % l1.slug)
+        art_url = reverse('mingus.views.article', kwargs={'slug': l1.slug})
+        response = self.client.get(art_url)
         self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
 
 class SecureArticleTestCase(TestCase):
