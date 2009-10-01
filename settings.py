@@ -30,7 +30,7 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'mingus.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(DIRNAME, 'templates'),
