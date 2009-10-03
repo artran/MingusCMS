@@ -1,3 +1,4 @@
-/Library/.*
-/System/.*
+^/Library/.*
+^/System/.*
+^/usr/.*
 manage.py
