@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import cPickle as pickle
+import os.path
 
 f = open('.figleaf')
 d = pickle.load(f)
@@ -9,7 +10,8 @@ d2 = {}
 for key,val in d.items():
     idx = key.find(r'mingus/../mingus/')
     if idx > -1 and key.endswith('.py'):
-        key = key[idx+17:]
+        key = os.path.normpath(key)
+        print key
     d2[key] = val
 
 f = open('.figleaf2', 'w')
