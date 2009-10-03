@@ -13,7 +13,7 @@ for key,val in d.items():
         key = os.path.normpath(key)
     d2[key] = val
 
-f = open('.figleaf2', 'w')
+f = open('.figleaf', 'w')
 pickle.dump(d2, f)
 f.close()
 
