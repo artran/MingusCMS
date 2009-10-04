@@ -8,8 +8,7 @@ f.close()
 
 d2 = {}
 for key,val in d.items():
-    idx = key.find(r'mingus/../mingus/')
-    if idx > -1 and key.endswith('.py'):
+    if key.endswith('.py'):
         key = os.path.normpath(key)
     d2[key] = val
 
