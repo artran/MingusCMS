@@ -190,7 +190,7 @@ class Image(models.Model):
         super(Image, self).save()
         
     def get_absolute_url(self):
-        return self.get_image_url()
+        return '/media/%s' % self.image.url
     def __str__(self):
         return self.name
     class Meta:
