@@ -30,7 +30,7 @@ def add_images(article, lang=settings.LANGUAGE_CODE):
             except AssertionError:
                 print 'Multiple images found with the slug %s' % slug
                 image_url = 'MultipleImagesExist'
-            except Image.DoesNotExist:
+            except ArticleImage.DoesNotExist:
                 print 'No images with the slug "%s" related to article with slug "%s"' % (slug, article.slug)
                 image_url = 'NoImageFound'
             
