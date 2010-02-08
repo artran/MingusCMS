@@ -180,7 +180,7 @@ class Image(models.Model):
     width = models.IntegerField(null=True, blank=True)
     image = models.FileField(upload_to='cms_images')
     created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
-    created_by = models.ForeignKey(User, editable=False) # This will be filled automatically in the admin interface.
+    created_by = models.ForeignKey(User)
     
     # Set a slug if one wasn't provided.
     def save(self):

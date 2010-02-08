@@ -5,17 +5,9 @@ from datetime import datetime
 
 class ArticleImageInline(admin.StackedInline):
     model = ArticleImage
-    def save_model(self, request, img, form, change):
-        if not change:
-            img.created_by = request.user
-        img.save()
 
 class SectionImageInline(admin.StackedInline):
     model = SectionImage
-    def save_model(self, request, img, form, change):
-        if not change:
-            img.created_by = request.user
-        img.save()
 
 class SectionAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -47,17 +39,9 @@ class TransArticleAdmin(admin.ModelAdmin):
 
 class ArticleImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    def save_model(self, request, image, form, change):
-        if not change:
-            image.created_by = request.user
-        image.save()
 
 class SectionImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    def save_model(self, request, image, form, change):
-        if not change:
-            image.created_by = request.user
-        image.save()
 
 admin.site.register(Language)
 admin.site.register(Section, SectionAdmin)
