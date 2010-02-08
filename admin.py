@@ -47,9 +47,17 @@ class TransArticleAdmin(admin.ModelAdmin):
 
 class ArticleImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    def save_model(self, request, image, form, change):
+        if not change:
+            image.created_by = request.user
+        image.save()
 
 class SectionImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    def save_model(self, request, image, form, change):
+        if not change:
+            image.created_by = request.user
+        image.save()
 
 admin.site.register(Language)
 admin.site.register(Section, SectionAdmin)
