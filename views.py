@@ -1,5 +1,5 @@
-from django.shortcuts import render_to_response, get_object_or_404
 from django.http import Http404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 
 from mingus.models import *
@@ -27,7 +27,7 @@ def section(request, slug):
         the_article = live_articles.order_by('?')[0]
     else:
         raise Http404
-    return article(request, the_article.slug)
+    return redirect(the_article)
 
 def article(request, slug):
     article = get_object_or_404(Article, slug=slug)
