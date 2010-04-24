@@ -140,36 +140,10 @@ class LiveArticleTestCase(TestCase):
 
 class SecureArticleTestCase(TestCase):
 
+    fixtures = ('test-secure.xml',)
+    
     def setUp(self):
-        group = Group(name='group-secure')
-        group.save()
-
-        insec_user = User.objects.create_user('user-insecure', 'insecure@artran.co.uk', 'password')
-
-        sec_user = User.objects.create_user('user-secure', 'secure@artran.co.uk', 'password')
-        sec_user.groups.add(group)
-        sec_user.save()
-
-        secure_sec = Section(name='test secure', live=True, slug='section-secure', sort=20)
-        secure_sec.save()
-        secure_sec.allowed_groups.add(group)
-        secure_sec.save()
-
-        insecure_sec = Section(name='test insecure', live=True, slug='section-insecure', sort=10)
-        insecure_sec.save()
-
-        now = datetime.now()
-        sec_art = Article(title='sec_art', body='', slug='sec_art',
-                        created_by=sec_user, created_at=now,
-                        last_edited_by=sec_user, last_edited_at=now,
-                        section=secure_sec)
-        sec_art.save()
-
-        insec_art = Article(title='insec_art', body='', slug='insec_art',
-                        created_by=sec_user, created_at=now,
-                        last_edited_by=sec_user, last_edited_at=now,
-                        section=insecure_sec)
-        insec_art.save()
+        pass
 
     def tearDown(self):
         Article.objects.all().delete()
@@ -233,28 +207,10 @@ class SecureArticleTestCase(TestCase):
 
 class ArticleBannerImageTestCase(TestCase):
 
+    fixtures = ('test-banner.xml',)
+    
     def setUp(self):
-        user = User.objects.create_user('user', 'test@artran.co.uk', 'password')
-
-        section = Section(name='banner test', live=True, slug='banner-test', sort=10)
-        section.save()
-
-        now = datetime.now()
-        banner_article = Article(title='banner_art', body='', slug='banner_art',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
-                        section=section)
-        banner_article.save()
-
-        banner_image = ArticleImage(name='banner image', slug='banner_image',
-                        created_by=user, created_at=now, article=banner_article)
-        banner_image.save()
-
-        no_banner_article = Article(title='no banner_art', body='', slug='no_banner_art',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
-                        section=section)
-        no_banner_article.save()
+        pass
 
     def tearDown(self):
         Article.objects.all().delete()
