@@ -10,6 +10,7 @@ slug_match_regex = re.compile(r'\[([\w-]*)\]')
 
 register = template.Library()
 
+
 @register.filter
 def add_images(article, lang=settings.LANGUAGE_CODE):
     '''
@@ -20,7 +21,7 @@ def add_images(article, lang=settings.LANGUAGE_CODE):
     matches = image_match_regex.finditer(body)
     if matches:
         images = article.images.all()
-        
+
         # To manipulate the body text safely we need to reverse the iterator
         for match in reversed(list(matches)):
             slug = slug_match_regex.search(match.group()).group(1)
@@ -33,14 +34,16 @@ def add_images(article, lang=settings.LANGUAGE_CODE):
             except ArticleImage.DoesNotExist:
                 print 'No images with the slug "%s" related to article with slug "%s"' % (slug, article.slug)
                 image_url = 'NoImageFound'
-            
+
             body = body[:match.start()] + image_url + body[match.end():]
     return body
 add_images.is_safe = True
 
+
 @register.filter
 def i18n_section_name(section, lang):
     return section.get_i18n_name(lang)
+
 
 @register.filter
 def i18n_article_title(article, lang):

@@ -3,11 +3,14 @@ from mingus.models import *
 
 from datetime import datetime
 
+
 class ArticleImageInline(admin.StackedInline):
     model = ArticleImage
 
+
 class SectionImageInline(admin.StackedInline):
     model = SectionImage
+
 
 class SectionAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -15,9 +18,11 @@ class SectionAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = (SectionImageInline,)
 
+
 class TransSectionAdmin(admin.ModelAdmin):
     list_display = ('trans_name', 'section', 'lang')
     list_filter = ['lang']
+
 
 class ArticleAdmin(admin.ModelAdmin):
     save_on_top = True
@@ -27,6 +32,7 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     inlines = (ArticleImageInline,)
     filter_horizontal = ('related',)
+
     def save_model(self, request, article, form, change):
         if not change:
             article.created_by = request.user
@@ -34,12 +40,15 @@ class ArticleAdmin(admin.ModelAdmin):
         article.last_edited_at = datetime.now()
         article.save()
 
+
 class TransArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'article', 'lang')
     list_filter = ['lang']
 
+
 class ArticleImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+
 
 class SectionImageAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}

@@ -12,6 +12,7 @@ def index(request):
         raise Http404
     return section(request, first_section.slug)
 
+
 def section(request, slug):
     try:
         section = Section.get_sections_allowed_for_user(request.user).get(slug=slug)
@@ -19,7 +20,7 @@ def section(request, slug):
         raise Http404
 
     live_articles = Article.live_objects.filter(section__slug=slug)
-    
+
     # Try to get a "home_page" article, if there are none use any article
     articles = live_articles.filter(home_page=True).order_by('?')
     if articles.count() > 0:
@@ -30,6 +31,7 @@ def section(request, slug):
         raise Http404
     return redirect(the_article)
 
+
 def article(request, slug):
     article = get_object_or_404(Article, slug=slug)
     if not article.is_live():
@@ -39,20 +41,20 @@ def article(request, slug):
         section = sections.get(slug=article.section.slug)
     except Section.DoesNotExist:
         raise Http404
-    
+
     sections = sections.filter(parent__isnull=True)
     live_articles = Article.live_objects.all()
     in_this_section = Article.live_objects.filter(section=article.section).order_by('-home_page', '-feature', 'title')
     featured = in_this_section.filter(feature=True)
-    
+
     related = article.get_live_related()
-    
+
     # Try to get a 'banner' picture. If there isn't one then the section's banner can be used
     try:
         banner_image = article.images.filter(slug__istartswith='banner_image').order_by('?')[0]
     except IndexError:
         banner_image = None
-    
+
     active = article.section
     while active.parent:
         active = active.parent

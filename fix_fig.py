@@ -7,7 +7,7 @@ d = pickle.load(f)
 f.close()
 
 d2 = {}
-for key,val in d.items():
+for key, val in d.items():
     if key.endswith('.py'):
         key = os.path.normpath(key)
     d2[key] = val
@@ -15,4 +15,3 @@ for key,val in d.items():
 f = open('.figleaf', 'w')
 pickle.dump(d2, f)
 f.close()
-
