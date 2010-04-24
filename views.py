@@ -4,6 +4,7 @@ from django.template import RequestContext
 
 from mingus.models import *
 
+
 def index(request):
     try:
         first_section = Section.get_sections_allowed_for_user(request.user)[0]
@@ -46,6 +47,12 @@ def article(request, slug):
     
     related = article.get_live_related()
     
+    # Try to get a 'banner' picture. If there isn't one then the section's banner can be used
+    try:
+        banner_image = article.images.filter(slug__istartswith='banner_image').order_by('?')[0]
+    except IndexError:
+        banner_image = None
+    
     active = article.section
     while active.parent:
         active = active.parent
@@ -55,5 +62,6 @@ def article(request, slug):
                                                       'related': related,
                                                       'in_this_section': in_this_section,
                                                       'featured': featured,
+                                                      'banner_image': banner_image,
                                                       'session': request.session,
                                                       'lang': request.LANGUAGE_CODE})

@@ -179,7 +179,7 @@ class SecureArticleTestCase(TestCase):
         url = reverse('mingus.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
-        response = self.client.get(url)
+        response = self.client.get(url, follow=True)
         self.failUnlessEqual(response.status_code, 200)
         self.failIf((secure_sec in response.context['sections']),
                 'Sections contained secure section for unauth user')
@@ -191,7 +191,7 @@ class SecureArticleTestCase(TestCase):
         secure_sec = Section.objects.get(slug='section-secure')
 
         self.client.login(username='user-insecure', password='password')
-        response = self.client.get(url)
+        response = self.client.get(url, follow=True)
         self.failUnlessEqual(response.status_code, 200)
         self.failIf((secure_sec in response.context['sections']),
                 'Sections contained secure section for insecure user')
@@ -211,7 +211,7 @@ class SecureArticleTestCase(TestCase):
         secure_sec = Section.objects.get(slug='section-secure')
 
         self.client.login(username='user-secure', password='password')
-        response = self.client.get(url)
+        response = self.client.get(url, follow=True)
         self.failUnlessEqual(response.status_code, 200)
         self.failUnless((secure_sec in response.context['sections']),
                 'Sections did not contain secure section for secure user')
@@ -226,3 +226,49 @@ class SecureArticleTestCase(TestCase):
         self.failUnlessEqual(response.status_code, 200,
                 'Secure article not returned for secure user')
 
+class ArticleBannerImageTestCase(TestCase):
+    
+    def setUp(self):
+        user = User.objects.create_user('user', 'test@artran.co.uk', 'password')
+
+        section = Section(name='banner test', live=True, slug='banner-test', sort=10)
+        section.save()
+
+        now = datetime.now()
+        banner_article = Article(title='banner_art', body='', slug='banner_art',
+                        created_by=user, created_at=now,
+                        last_edited_by=user, last_edited_at=now,
+                        section=section)
+        banner_article.save()
+        
+        banner_image = ArticleImage(name='banner image', slug='banner_image',
+                        created_by=user, created_at=now, article=banner_article)
+        banner_image.save()
+
+        no_banner_article = Article(title='no banner_art', body='', slug='no_banner_art',
+                        created_by=user, created_at=now,
+                        last_edited_by=user, last_edited_at=now,
+                        section=section)
+        no_banner_article.save()
+    
+    def tearDown(self):
+        Article.objects.all().delete()
+        Section.objects.all().delete()
+        User.objects.all().delete()
+        ArticleImage.objects.all().delete()
+    
+    def test_article_with_image(self):
+        'Get an article which has a banner image. The image should be in the context'
+        art_url = reverse('mingus.views.article', kwargs={'slug': 'banner_art'})
+
+        response = self.client.get(art_url)
+        self.failUnlessEqual(response.context['banner_image'].slug, 'banner_image',
+                'No banner image returned')
+
+    def test_article_without_banner_image(self):
+        'Get an article which has no banner image. The context should contain None'
+        art_url = reverse('mingus.views.article', kwargs={'slug': 'no_banner_art'})
+
+        response = self.client.get(art_url)
+        self.failUnlessEqual(response.context['banner_image'], None,
+                'Banner image should be None')
