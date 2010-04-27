@@ -59,6 +59,7 @@ class Section(models.Model):
     block_img = models.FileField(upload_to='block-images', blank=True, help_text=block_img_help_text)
     thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=thumb_img_help_text)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
+    sort_articles = models.BooleanField(default=False, help_text='True to sort articles by sort index')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
     allowed_groups = models.ManyToManyField(Group, blank=True)
 
@@ -133,7 +134,8 @@ class Article(models.Model):
     related = models.ManyToManyField('self', blank=True)
     slug = models.SlugField(unique=True, help_text='Auto generated')
     section = models.ForeignKey(Section, related_name='articles')
-
+    sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier. Enable sorting in the section to use.')
+    
     # Managers
     objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
     live_objects = LiveArticleManager()
@@ -209,7 +211,7 @@ class Image(models.Model):
         super(Image, self).save()
 
     def get_absolute_url(self):
-        return '/media/%s' % self.image.url
+        return self.image.url
 
     def __str__(self):
         return self.name
