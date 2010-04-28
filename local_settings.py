@@ -59,3 +59,5 @@ INSTALLED_APPS = (
 )
 
 TEST_RUNNER = 'django_nose.run_tests'
+
+CONTACT_RECIPIENTS = ('ray@artran.co.uk',)

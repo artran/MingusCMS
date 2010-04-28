@@ -1,6 +1,9 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
+from django.template.loader import render_to_string
 
 from mingus.models import *
 
@@ -67,3 +70,12 @@ def article(request, slug):
                                                       'banner_image': banner_image,
                                                       'session': request.session,
                                                       'lang': request.LANGUAGE_CODE})
+
+def contact(request):
+    if request.method == 'POST':
+        body = render_to_string('mingus/contact.eml', {'post': request.POST})
+        send_mail('Customer email from website', body, settings.DEFAULT_FROM_EMAIL,
+            settings.CONTACT_RECIPIENTS, fail_silently=False)
+        return render_to_response('mingus/contact-sent.html')
+    else:
+        raise Http404

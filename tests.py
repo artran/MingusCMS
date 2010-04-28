@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User, Group
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -238,3 +239,20 @@ class ArticleBannerImageTestCase(TestCase):
 class SortedArticlesTestCase(TestCase):
 
     pass
+
+class ContactEmailTest(TestCase):
+    
+    def test_send_email(self):
+        'Send an email via the contact form and verify it reaches the mailbox'
+        mail_url = reverse('mingus.views.contact')
+        
+        response = self.client.post(mail_url, {'first_name': 'Test',
+                                               'last_name': 'Case',
+                                               'email': 'test@artran.co.uk',
+                                               'telephone': '0123456789',
+                                               'comments': 'Test comments'})
+
+        # Test that one message has been sent.
+        self.assertEquals(len(mail.outbox), 1)
+        self.failUnlessEqual(response.status_code, 200,
+                'Status code was %s, should be 200' % response.status_code)
