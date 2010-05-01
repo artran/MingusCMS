@@ -238,10 +238,25 @@ class ArticleBannerImageTestCase(TestCase):
 
 class SortedArticlesTestCase(TestCase):
 
-    fixtures = ('test-article-sorting.xml',)
+    fixtures = ('test-sorting.xml',)
 
     def test_sorted_articles(self):
-        pass
+        sorted_sect_url = reverse('mingus.views.section', kwargs={'slug': 'sorted'})
+        response = self.client.get(sorted_sect_url, follow=True)
+        articles = response.context['in_this_section']
+        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(articles[0].sort, 10)
+        self.failUnlessEqual(articles[1].sort, 20)
+        self.failUnlessEqual(articles[2].sort, 30)
+    
+    def test_default_sorting(self):
+        unsorted_sect_url = reverse('mingus.views.section', kwargs={'slug': 'unsorted'})
+        response = self.client.get(unsorted_sect_url, follow=True)
+        articles = response.context['in_this_section']
+        self.failUnlessEqual(response.status_code, 200)
+        self.failUnlessEqual(articles[0].sort, 30)
+        self.failUnlessEqual(articles[1].sort, 20)
+        self.failUnlessEqual(articles[2].sort, 10)
 
 class ContactEmailTest(TestCase):
     
