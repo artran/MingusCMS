@@ -47,7 +47,10 @@ def article(request, slug):
 
     sections = sections.filter(parent__isnull=True)
     live_articles = Article.live_objects.all()
-    in_this_section = Article.live_objects.filter(section=article.section).order_by('-home_page', '-feature', 'title')
+    if section.sort_articles:
+        in_this_section = Article.live_objects.filter(section=article.section).order_by('sort')
+    else:
+        in_this_section = Article.live_objects.filter(section=article.section).order_by('-home_page', '-feature', 'title')
     featured = in_this_section.filter(feature=True)
 
     related = article.get_live_related()

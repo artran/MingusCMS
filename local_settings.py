@@ -54,10 +54,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'mingus',
     'django_extensions',
-    'django_nose',
     #'helpdesk',
 )
-
-TEST_RUNNER = 'django_nose.run_tests'
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)

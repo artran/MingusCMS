@@ -238,7 +238,10 @@ class ArticleBannerImageTestCase(TestCase):
 
 class SortedArticlesTestCase(TestCase):
 
-    pass
+    fixtures = ('test-article-sorting.xml',)
+
+    def test_sorted_articles(self):
+        pass
 
 class ContactEmailTest(TestCase):
     
