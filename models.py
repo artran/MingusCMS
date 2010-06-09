@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.db.models import Q
+from django.template import Template
+from django.template.context import Context
 from django.template.defaultfilters import slugify
 
 from datetime import datetime
@@ -142,6 +144,12 @@ class Article(models.Model):
     # Managers
     objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
     live_objects = LiveArticleManager()
+
+    def render(self):
+        ''' Turn the body content into HTML resolving variables and tags as it goes.'''
+        template = Template(self.body, self, 'Mingus article template for article %s' % self.pk)
+        c = Context({'settings': settings})
+        return template.render(c)
 
     def get_i18n_title(self, language_code):
         title = self.title
