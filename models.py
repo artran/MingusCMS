@@ -147,7 +147,7 @@ class Article(models.Model):
 
     def render(self):
         ''' Turn the body content into HTML resolving variables and tags as it goes.'''
-        template = Template(self.body, self, 'Mingus article template for article %s' % self.pk)
+        template = Template(self.body, name='Mingus article template for article %s' % self.pk)
         c = Context({'settings': settings})
         return template.render(c)
 
