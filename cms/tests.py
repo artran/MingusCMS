@@ -7,7 +7,7 @@ from django.test import TestCase
 
 import unittest
 
-from mingus.models import *
+from models import *
 
 
 class LiveArticleTestCase(TestCase):

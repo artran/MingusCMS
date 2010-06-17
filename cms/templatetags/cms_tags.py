@@ -3,7 +3,7 @@ from django.conf import settings
 
 import re
 
-from mingus.models import *
+from mingus.cms.models import *
 
 image_match_regex = re.compile(r'{{\s*IMAGE\[[\w-]*\]\s*}}')
 slug_match_regex = re.compile(r'\[([\w-]*)\]')

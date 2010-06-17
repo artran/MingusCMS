@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mingus.models import *
+from models import *
 
 from datetime import datetime
 

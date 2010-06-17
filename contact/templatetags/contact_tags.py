@@ -1,8 +1,8 @@
 from django.template import Library, Template
 from django.template.context import Context
 
-from contact.forms import ContactForm
-from contact.models import ContactFormModel
+from mingus.contact.forms import ContactForm
+from mingus.contact.models import ContactFormModel
 
 
 register = Library()
