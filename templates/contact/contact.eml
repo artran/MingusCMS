@@ -1,0 +1,5 @@
+{{ post.first_name }} {{ post.last_name }} has contacted you.
+
+Email: {{ post.email }}
+Phone: {{ post.telephone }}
+Message: {{ post.message }}
