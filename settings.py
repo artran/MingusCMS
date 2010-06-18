@@ -36,5 +36,10 @@ TEMPLATE_DIRS = (
     os.path.join(DIRNAME, 'templates'),
 )
 
+# Workaround for PIL import issues.
+import sys
+import PIL.Image
+sys.modules['Image'] = PIL.Image
+
 # Load the local settings
 from local_settings import *
