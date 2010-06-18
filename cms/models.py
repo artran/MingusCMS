@@ -49,33 +49,16 @@ class Language(models.Model):
 
 
 class Section(models.Model):
-    try:
-        block_img_help_text = settings.SECTION_BLOCK_IMG_HELP
-        thumb_img_help_text = settings.SECTION_THUMB_IMG_HELP
-    except AttributeError:
-        block_img_help_text = 'Configure help text in settings.SECTION_BLOCK_IMG_HELP'
-        thumb_img_help_text = 'Configure help text in settings.SECTION_THUMB_IMG_HELP'
     name = models.CharField(max_length=50, unique=True)
     live = models.BooleanField(default=False)
     slug = models.SlugField(help_text='Auto generated')
-    block_img = models.FileField(upload_to='block-images', blank=True, help_text=block_img_help_text)
-    thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=thumb_img_help_text)
     sort = models.SmallIntegerField(help_text='Lower numbers sort earlier.')
-    sort_articles = models.BooleanField(default=False, help_text='True to sort articles by sort index')
     parent = models.ForeignKey('self', blank=True, null=True, related_name='subsections')
     allowed_groups = models.ManyToManyField(Group, blank=True)
 
     # Managers
     objects = models.Manager() # If this isn't first then non-live sections can't edited in the admin interface
     live_objects = LiveSectionManager()
-
-    def get_random_image_url(self):
-        # If there are no alternate images or the random function picks 0 from an appropriately sized range
-        if self.images.count() == 0 or random.randrange(self.images.count() + 1) == 0:
-            return self.block_img.url
-        else:
-            image = self.images.order_by('?')[0]
-            return image.image.url
 
     @staticmethod
     def get_sections_allowed_for_user(user=None):
@@ -88,12 +71,10 @@ class Section(models.Model):
             return Section.live_objects.filter(allowed_groups__isnull=True)
 
     def get_i18n_name(self, language_code):
-        name = self.name
         try:
-            trans_sect = TransSection.objects.get(lang__code=language_code, section=self)
-            name = trans_sect.trans_name
+            name = TransSection.trans_sections.get(lang__code=language_code, section=self).name
         except TransSection.DoesNotExist:
-            pass
+            name = self.name
         return name
 
     def __unicode__(self):
@@ -109,33 +90,25 @@ class Section(models.Model):
 class TransSection(models.Model):
     """The translation of a section's name"""
     lang = models.ForeignKey(Language)
-    section = models.ForeignKey(Section)
-    trans_name = models.CharField(max_length=50, unique=True)
+    section = models.ForeignKey(Section, related_name='trans_sections')
+    name = models.CharField(max_length=50, unique=True)
 
     class Meta:
         unique_together = ('lang', 'section')
 
     def __unicode__(self):
-        return u'%s (%s, %s)' % (self.trans_name, self.section.name, self.lang.name)
+        return u'%s (%s, %s)' % (self.name, self.section.name, self.lang.name)
 
 
 class Article(models.Model):
+    '''A model to hold the metadata and to pull all of the components together.'''
     ARTICLE_LIVE_TEST = "(live_from is null or live_from < %s) and (live_to is null or live_to > %s)"
     title = models.CharField(max_length=100)
     head_title = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True, help_text='For SEO purposes')
     keywords = models.TextField(blank=True, help_text='For SEO purposes')
-    body = models.TextField(help_text='For local images use {{ IMAGE[&lt;SLUG&gt;] }} or /media/cms_images/&lt;IMG-FILE&gt; for the url.')
-    style = models.TextField('Extra styling', blank=True)
     live_from = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live immediately')
     live_to = models.DateTimeField(blank=True, null=True, default=None, help_text='Blank means live until forever')
-    feature = models.BooleanField('Featured article', default=False, help_text='Sorts higher than non-feature articles in "in_this_section" context variable. Also given in "featured" context variable')
-    home_page = models.BooleanField(default=False, help_text='Goes on the home page for a section. Sorts ahead of featured articles in "in_this_section" context variable.')
-    created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
-    # The next three will be filled automatically in the admin interface. Outside the admin you still need to populate them.
-    created_by = models.ForeignKey(User, editable=False)
-    last_edited_at = models.DateTimeField(blank=True, editable=False)
-    last_edited_by = models.ForeignKey(User, related_name='edited_articles', editable=False)
     related = models.ManyToManyField('self', blank=True)
     slug = models.SlugField(unique=True, help_text='Auto generated')
     section = models.ForeignKey(Section, related_name='articles')
@@ -145,29 +118,12 @@ class Article(models.Model):
     objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
     live_objects = LiveArticleManager()
 
-    def render(self):
-        ''' Turn the body content into HTML resolving variables and tags as it goes.'''
-        template = Template(self.body, name='Mingus article template for article %s' % self.pk)
-        c = Context({'settings': settings})
-        return template.render(c)
-
     def get_i18n_title(self, language_code):
-        title = self.title
         try:
-            trans_article = TransArticle.objects.get(lang__code=language_code, article=self)
-            title = trans_article.title
+            title = TransArticle.trans_articles.get(lang__code=language_code, article=self).title
         except TransArticle.DoesNotExist:
-            pass
+            title = self.title
         return title
-
-    def get_i18n_body(self, language_code):
-        body = self.body
-        try:
-            trans_article = TransArticle.objects.get(lang__code=language_code, article=self)
-            body = trans_article.body
-        except TransArticle.DoesNotExist:
-            pass
-        return body
 
     def get_live_related(self):
         'Return all of the related Articles which are live'
@@ -195,7 +151,6 @@ class TransArticle(models.Model):
     lang = models.ForeignKey(Language)
     article = models.ForeignKey(Article)
     title = models.CharField(max_length=100)
-    body = models.TextField(help_text='For local images use {{ IMAGE[&lt;SLUG&gt;] }} or /media/cms_images/&lt;IMG-FILE&gt; for the url.')
 
     class Meta:
         unique_together = ('lang', 'article')
@@ -204,15 +159,10 @@ class TransArticle(models.Model):
         return u'%s (%s, %s)' % (self.title, self.article.title, self.lang.name)
 
 
-class Image(models.Model):
+class AbstractMedia(models.Model):
     name = models.CharField(max_length=30)
     slug = models.SlugField(blank=True, help_text='Auto generated but can be overridden')
     caption = models.CharField(max_length=50, blank=True)
-    height = models.IntegerField(null=True, blank=True)
-    width = models.IntegerField(null=True, blank=True)
-    image = models.FileField(upload_to='cms_images')
-    created_at = models.DateTimeField(blank=True, editable=False, default=datetime.now)
-    created_by = models.ForeignKey(User)
 
     # Set a slug if one wasn't provided.
     def save(self):
@@ -232,30 +182,27 @@ class Image(models.Model):
         ordering = ['id']
 
 
-class ArticleImage(Image):
-    article = models.ForeignKey(Article, related_name='images')
-
-    class Meta:
-        unique_together = (('slug', 'article'),)
-try:
-    img_help_text = settings.ARTICLE_IMG_HELP
-except AttributeError:
-    img_help_text = 'Configure help text in settings.ARTICLE_IMG_HELP'
-ArticleImage._meta.get_field('image').help_text = img_help_text
+class Image(AbstractMedia):
+    image = models.FileField(upload_to='cms_images')
+    height = models.IntegerField()
+    width = models.IntegerField()
 
 
-class SectionImage(Image):
-    try:
-        img_help_text = settings.SECTION_ALT_THUMB_IMG_HELP
-    except AttributeError:
-        img_help_text = 'Configure help text in settings.SECTION_ALT_THUMB_IMG_HELP'
-    section = models.ForeignKey(Section, related_name='images')
-    thumbnail_img = models.ImageField(upload_to='icons', blank=True, help_text=img_help_text)
+class Media(AbstractMedia):
+    media_file = models.FileField(upload_to='cms_media')
+    mime_type = models.CharField(max_length=25)
 
-    class Meta:
-        unique_together = (('slug', 'section'),)
-try:
-    img_help_text = settings.SECTION_ALT_IMG_HELP
-except AttributeError:
-    img_help_text = 'Configure help text in settings.SECTION_ALT_IMG_HELP'
-SectionImage._meta.get_field('image').help_text = img_help_text
+
+class TextChunk(models.Model):
+    body = models.TextField(blank=True)
+    live = models.BooleanField(default=True)
+
+
+class PageTemplate(models.Model):
+    tmpl = models.FileField(upload_to='cms_templates')
+
+    def render(self):
+       ''' Turn the template content into HTML resolving variables and tags as it goes.'''
+       template = Template(self.tmpl, name='Mingus article template for PageTemplate %s' % self.pk)
+       c = Context({'settings': settings})
+       return template.render(c)
