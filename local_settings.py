@@ -56,7 +56,7 @@ INSTALLED_APPS = (
     'mingus.contact',
     'django_extensions',
     'django_nose',
-    #'helpdesk',
+    'south',
 )
 
 TEST_RUNNER = 'django_nose.run_tests'
