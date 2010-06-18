@@ -113,7 +113,7 @@ class Article(models.Model):
     slug = models.SlugField(unique=True, help_text='Auto generated')
     section = models.ForeignKey(Section, related_name='articles')
     sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier. Enable sorting in the section to use.')
-    
+
     # Managers
     objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
     live_objects = LiveArticleManager()
@@ -202,7 +202,7 @@ class PageTemplate(models.Model):
     tmpl = models.FileField(upload_to='cms_templates')
 
     def render(self):
-       ''' Turn the template content into HTML resolving variables and tags as it goes.'''
-       template = Template(self.tmpl, name='Mingus article template for PageTemplate %s' % self.pk)
-       c = Context({'settings': settings})
-       return template.render(c)
+        ''' Turn the template content into HTML resolving variables and tags as it goes.'''
+        template = Template(self.tmpl, name='Mingus article template for PageTemplate %s' % self.pk)
+        c = Context({'settings': settings})
+        return template.render(c)

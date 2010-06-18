@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Element'
         db.create_table('contact_element', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -42,9 +43,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('contact', ['ContactFormElements'])
 
-
     def backwards(self, orm):
-        
+
         # Deleting model 'Element'
         db.delete_table('contact_element')
 
@@ -63,7 +63,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'required': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'blank': 'True'}),
-            'sort': ('django.db.models.fields.PositiveSmallIntegerField', [], {})
+            'sort': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
         },
         'contact.contactformmodel': {
             'Meta': {'object_name': 'ContactFormModel'},

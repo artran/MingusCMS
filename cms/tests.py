@@ -142,7 +142,7 @@ class LiveArticleTestCase(TestCase):
 class SecureArticleTestCase(TestCase):
 
     fixtures = ('test-secure.xml',)
-    
+
     def setUp(self):
         pass
 
@@ -209,7 +209,7 @@ class SecureArticleTestCase(TestCase):
 class ArticleBannerImageTestCase(TestCase):
 
     fixtures = ('test-banner.xml',)
-    
+
     def setUp(self):
         pass
 
@@ -248,7 +248,7 @@ class SortedArticlesTestCase(TestCase):
         self.failUnlessEqual(articles[0].sort, 10)
         self.failUnlessEqual(articles[1].sort, 20)
         self.failUnlessEqual(articles[2].sort, 30)
-    
+
     def test_default_sorting(self):
         unsorted_sect_url = reverse('mingus.views.section', kwargs={'slug': 'unsorted'})
         response = self.client.get(unsorted_sect_url, follow=True)
@@ -258,12 +258,13 @@ class SortedArticlesTestCase(TestCase):
         self.failUnlessEqual(articles[1].sort, 20)
         self.failUnlessEqual(articles[2].sort, 10)
 
+
 class ContactEmailTest(TestCase):
-    
+
     def test_send_email(self):
         'Send an email via the contact form and verify it reaches the mailbox'
         mail_url = reverse('mingus.views.contact')
-        
+
         response = self.client.post(mail_url, {'first_name': 'Test',
                                                'last_name': 'Case',
                                                'email': 'test@artran.co.uk',

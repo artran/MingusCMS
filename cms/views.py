@@ -74,6 +74,7 @@ def article(request, slug):
                                                       'session': request.session,
                                                       'lang': request.LANGUAGE_CODE})
 
+
 def contact(request):
     if request.method == 'POST':
         body = render_to_string('mingus/contact.eml', {'post': request.POST})

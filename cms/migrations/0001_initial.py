@@ -4,10 +4,11 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'Language'
         db.create_table('cms_language', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -34,7 +35,7 @@ class Migration(SchemaMigration):
         db.create_table('cms_section_allowed_groups', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('section', models.ForeignKey(orm['cms.section'], null=False)),
-            ('group', models.ForeignKey(orm['auth.group'], null=False))
+            ('group', models.ForeignKey(orm['auth.group'], null=False)),
         ))
         db.create_unique('cms_section_allowed_groups', ['section_id', 'group_id'])
 
@@ -77,7 +78,7 @@ class Migration(SchemaMigration):
         db.create_table('cms_article_related', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('from_article', models.ForeignKey(orm['cms.article'], null=False)),
-            ('to_article', models.ForeignKey(orm['cms.article'], null=False))
+            ('to_article', models.ForeignKey(orm['cms.article'], null=False)),
         ))
         db.create_unique('cms_article_related', ['from_article_id', 'to_article_id'])
 
@@ -131,9 +132,8 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'SectionImage', fields ['slug', 'section']
         db.create_unique('cms_sectionimage', ['slug', 'section_id'])
 
-
     def backwards(self, orm):
-        
+
         # Deleting model 'Language'
         db.delete_table('cms_language')
 
@@ -179,7 +179,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Group'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'blank': 'True'})
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'blank': 'True'}),
         },
         'auth.permission': {
             'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
