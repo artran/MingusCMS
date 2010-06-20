@@ -183,13 +183,13 @@ class AbstractMedia(models.Model):
 
 
 class Image(AbstractMedia):
-    image = models.FileField(upload_to='cms_images')
+    image = models.FileField(upload_to='repos/preview_content/cms_images')
     height = models.IntegerField()
     width = models.IntegerField()
 
 
 class Media(AbstractMedia):
-    media_file = models.FileField(upload_to='cms_media')
+    media_file = models.FileField(upload_to='repos/preview_content/cms_media')
     mime_type = models.CharField(max_length=25)
 
 
@@ -199,7 +199,7 @@ class TextChunk(models.Model):
 
 
 class PageTemplate(models.Model):
-    tmpl = models.FileField(upload_to='cms_templates')
+    tmpl = models.FileField(upload_to='repos/preview_content/cms_templates')
 
     def render(self):
         ''' Turn the template content into HTML resolving variables and tags as it goes.'''

@@ -1,3 +1,5 @@
+import os
+
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
 ADMINS = (
@@ -64,5 +66,3 @@ INSTALLED_APPS = (
 TEST_RUNNER = 'django_nose.run_tests'
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
-
-REPO_ROOT = os.path.join(DIRNAME, 'repos')
