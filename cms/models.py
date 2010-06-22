@@ -112,7 +112,7 @@ class Article(models.Model):
     related = models.ManyToManyField('self', blank=True)
     slug = models.SlugField(unique=True, help_text='Auto generated')
     section = models.ForeignKey(Section, related_name='articles')
-    sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier. Enable sorting in the section to use.')
+    sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier.')
 
     # Managers
     objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
