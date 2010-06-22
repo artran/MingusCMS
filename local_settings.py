@@ -66,3 +66,5 @@ INSTALLED_APPS = (
 TEST_RUNNER = 'django_nose.run_tests'
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
+
+TEST_SERVER = bool(os.environ.get('TEST_SERVER', False))
