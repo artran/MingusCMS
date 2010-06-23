@@ -2,6 +2,8 @@ import os
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
 
+TEST_SERVER = bool(os.environ.get('TEST_SERVER', False))
+
 ADMINS = (
     ('Ray Tran', 'ray@artran.co.uk'),
 )
@@ -19,6 +21,13 @@ DATABASE_USER = ''
 DATABASE_PASSWORD = ''
 DATABASE_HOST = ''
 DATABASE_PORT = ''
+
+REPO_ROOT = os.path.join(DIRNAME, 'media_repos')
+if TEST_SERVER:
+    MEDIA_ROOT = os.path.join(DIRNAME, 'media_repos/preview_content')
+else:
+    MEDIA_ROOT = os.path.join(DIRNAME, 'media_repos/live_content')
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://www.postgresql.org/docs/8.1/static/datetime-keywords.html#DATETIME-TIMEZONE-SET-TABLE
@@ -66,5 +75,3 @@ INSTALLED_APPS = (
 TEST_RUNNER = 'django_nose.run_tests'
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
-
-TEST_SERVER = bool(os.environ.get('TEST_SERVER', False))
