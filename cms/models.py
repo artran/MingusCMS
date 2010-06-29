@@ -178,7 +178,7 @@ class AbstractMedia(models.Model):
     def get_absolute_url(self):
         return self.image.url
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     class Meta:
@@ -200,6 +200,9 @@ class Media(AbstractMedia):
 class TextChunk(models.Model):
     body = models.TextField(blank=True)
     live = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.body[:20]
 
 
 class PageTemplate(models.Model):
