@@ -17,7 +17,7 @@ def index(request):
 def section(request, slug):
     try:
         section = Section.get_sections_allowed_for_user(request.user).get(slug=slug)
-        live_articles = Article.live_objects.filter(section__slug=slug).order_by('?')[0]
+        the_article = Article.live_objects.filter(section__slug=slug).order_by('?')[0]
     except (Section.DoesNotExist, IndexError):
         raise Http404
 
