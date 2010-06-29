@@ -83,6 +83,10 @@ class Section(models.Model):
         else:
             return u'%s (not live)' % self.name
 
+    @models.permalink
+    def get_absolute_url(self):
+        return('mingus.cms.views.section', (self.slug,))
+
     class Meta:
         ordering = ['sort']
 
@@ -143,7 +147,7 @@ class Article(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return('mingus.views.article', (self.slug,))
+        return('mingus.cms.views.article', (self.slug,))
 
 
 class TransArticle(models.Model):
