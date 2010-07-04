@@ -104,6 +104,58 @@ class TransSection(models.Model):
         return u'%s (%s, %s)' % (self.name, self.section.name, self.lang.name)
 
 
+class PageTemplate(models.Model):
+    tmpl = models.FileField(upload_to='repos/preview_content/cms_templates')
+
+    def render(self):
+        ''' Turn the template content into HTML resolving variables and tags as it goes.'''
+        template = Template(self.tmpl, name='Mingus article template for PageTemplate %s' % self.pk)
+        c = Context({'settings': settings})
+        return template.render(c)
+
+
+class AbstractMedia(models.Model):
+    name = models.CharField(max_length=30)
+    slug = models.SlugField(blank=True, help_text='Auto generated but can be overridden')
+    caption = models.CharField(max_length=50, blank=True)
+
+    # Set a slug if one wasn't provided.
+    def save(self):
+        # Set a slug if one isn't already set
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super(Image, self).save()
+
+    def get_absolute_url(self):
+        return self.image.url
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+        ordering = ['id']
+
+
+class Image(AbstractMedia):
+    image = models.FileField(upload_to='repos/preview_content/cms_images')
+    height = models.IntegerField()
+    width = models.IntegerField()
+
+
+class Media(AbstractMedia):
+    media_file = models.FileField(upload_to='repos/preview_content/cms_media')
+    mime_type = models.CharField(max_length=25)
+
+
+class TextChunk(models.Model):
+    body = models.TextField(blank=True)
+    live = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.body[:20]
+
+
 class Article(models.Model):
     '''A model to hold the metadata and to pull all of the components together.'''
     ARTICLE_LIVE_TEST = "(live_from is null or live_from < %s) and (live_to is null or live_to > %s)"
@@ -116,6 +168,10 @@ class Article(models.Model):
     related = models.ManyToManyField('self', blank=True)
     slug = models.SlugField(unique=True, help_text='Auto generated')
     section = models.ForeignKey(Section, related_name='articles')
+    template = models.ForeignKey(PageTemplate, related_name='articles', blank=True, null=True, help_text='The template used to render this article')
+    images = models.ManyToManyField(Image, related_name='articles', through='ArticleImage', blank=True)
+    media = models.ManyToManyField(Media, related_name='articles', through='ArticleMedia', blank=True)
+    text_chunks = models.ManyToManyField(TextChunk, related_name='articles', through='ArticleTextChunk', blank=True)
     sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier.')
 
     # Managers
@@ -163,53 +219,37 @@ class TransArticle(models.Model):
         return u'%s (%s, %s)' % (self.title, self.article.title, self.lang.name)
 
 
-class AbstractMedia(models.Model):
-    name = models.CharField(max_length=30)
-    slug = models.SlugField(blank=True, help_text='Auto generated but can be overridden')
-    caption = models.CharField(max_length=50, blank=True)
-
-    # Set a slug if one wasn't provided.
-    def save(self):
-        # Set a slug if one isn't already set
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super(Image, self).save()
-
-    def get_absolute_url(self):
-        return self.image.url
-
-    def __unicode__(self):
-        return self.name
+class ArticleImage(models.Model):
+    slug = models.SlugField(help_text='Auto generated')
+    article = models.ForeignKey(Article)
+    image = models.ForeignKey(Image)
 
     class Meta:
-        abstract = True
-        ordering = ['id']
-
-
-class Image(AbstractMedia):
-    image = models.FileField(upload_to='repos/preview_content/cms_images')
-    height = models.IntegerField()
-    width = models.IntegerField()
-
-
-class Media(AbstractMedia):
-    media_file = models.FileField(upload_to='repos/preview_content/cms_media')
-    mime_type = models.CharField(max_length=25)
-
-
-class TextChunk(models.Model):
-    body = models.TextField(blank=True)
-    live = models.BooleanField(default=True)
+        unique_together = ('slug', 'article')
 
     def __unicode__(self):
-        return self.body[:20]
+        return self.slug
 
 
-class PageTemplate(models.Model):
-    tmpl = models.FileField(upload_to='repos/preview_content/cms_templates')
+class ArticleMedia(models.Model):
+    slug = models.SlugField(help_text='Auto generated')
+    article = models.ForeignKey(Article)
+    media = models.ForeignKey(Media)
 
-    def render(self):
-        ''' Turn the template content into HTML resolving variables and tags as it goes.'''
-        template = Template(self.tmpl, name='Mingus article template for PageTemplate %s' % self.pk)
-        c = Context({'settings': settings})
-        return template.render(c)
+    class Meta:
+        unique_together = ('slug', 'media')
+
+    def __unicode__(self):
+        return self.slug
+
+
+class ArticleTextChunk(models.Model):
+    slug = models.SlugField(help_text='Auto generated')
+    article = models.ForeignKey(Article)
+    text_chunk = models.ForeignKey(TextChunk)
+
+    class Meta:
+        unique_together = ('slug', 'text_chunk')
+
+    def __unicode__(self):
+        return self.slug
