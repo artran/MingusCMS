@@ -105,7 +105,7 @@ class TransSection(models.Model):
 
 
 class PageTemplate(models.Model):
-    tmpl = models.FileField(upload_to='repos/preview_content/cms_templates')
+    tmpl = models.FileField(upload_to='cms_templates')
 
     def render(self):
         ''' Turn the template content into HTML resolving variables and tags as it goes.'''
@@ -124,7 +124,7 @@ class AbstractMedia(models.Model):
         # Set a slug if one isn't already set
         if not self.slug:
             self.slug = slugify(self.name)
-        super(Image, self).save()
+        super(AbstractMedia, self).save()
 
     def get_absolute_url(self):
         return self.image.url
@@ -138,13 +138,13 @@ class AbstractMedia(models.Model):
 
 
 class Image(AbstractMedia):
-    image = models.FileField(upload_to='repos/preview_content/cms_images')
-    height = models.IntegerField()
-    width = models.IntegerField()
+    image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
+    height = models.IntegerField(blank=True)
+    width = models.IntegerField(blank=True)
 
 
 class Media(AbstractMedia):
-    media_file = models.FileField(upload_to='repos/preview_content/cms_media')
+    media_file = models.FileField(upload_to='cms_media')
     mime_type = models.CharField(max_length=25)
 
 
@@ -220,7 +220,7 @@ class TransArticle(models.Model):
 
 
 class ArticleImage(models.Model):
-    slug = models.SlugField(help_text='Auto generated')
+    slug = models.SlugField()
     article = models.ForeignKey(Article)
     image = models.ForeignKey(Image)
 
@@ -232,7 +232,7 @@ class ArticleImage(models.Model):
 
 
 class ArticleMedia(models.Model):
-    slug = models.SlugField(help_text='Auto generated')
+    slug = models.SlugField()
     article = models.ForeignKey(Article)
     media = models.ForeignKey(Media)
 
@@ -244,7 +244,7 @@ class ArticleMedia(models.Model):
 
 
 class ArticleTextChunk(models.Model):
-    slug = models.SlugField(help_text='Auto generated')
+    slug = models.SlugField()
     article = models.ForeignKey(Article)
     text_chunk = models.ForeignKey(TextChunk)
 

@@ -15,6 +15,18 @@ class TransSectionAdmin(admin.ModelAdmin):
     list_filter = ['lang']
 
 
+class ArticleImageInline(admin.StackedInline):
+    model = ArticleImage
+
+
+class ArticleMediaInline(admin.StackedInline):
+    model = ArticleMedia
+
+
+class ArticleTextChunkInline(admin.StackedInline):
+    model = ArticleTextChunk
+
+
 class ArticleAdmin(admin.ModelAdmin):
     save_on_top = True
     list_filter = ('section',)
@@ -22,6 +34,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = ('title', 'section', 'live_from', 'live_to', 'is_live')
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ('related',)
+    inlines = (ArticleImageInline, ArticleMediaInline, ArticleTextChunkInline,)
 
 
 class TransArticleAdmin(admin.ModelAdmin):

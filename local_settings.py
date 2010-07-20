@@ -68,10 +68,13 @@ INSTALLED_APPS = (
     'mingus.cms',
     'mingus.contact',
     'django_extensions',
-    'django_nose',
     'south',
+    'django_nose', # must stay after south
 )
 
-TEST_RUNNER = 'django_nose.run_tests'
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+#TEST_RUNNER = 'django_nose.run_tests'
+#NOSE_ARGS = ('-w %s/' % DIRNAME,)
+NOSE_ARGS = ('-w /Users/ray/pyProjects/mingus/',)
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
