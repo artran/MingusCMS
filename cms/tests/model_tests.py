@@ -194,6 +194,7 @@ class SecureArticleTestCase(TestCase):
                 'Secure article not returned for secure user')
 
 
+'''
 class ArticleBannerImageTestCase(TestCase):
 
     fixtures = ('test-banner.xml',)
@@ -222,8 +223,10 @@ class ArticleBannerImageTestCase(TestCase):
         response = self.client.get(art_url)
         self.failUnlessEqual(response.context['banner_image'], None,
                 'Banner image should be None')
+                '''
 
 
+'''
 class SortedArticlesTestCase(TestCase):
 
     fixtures = ('test-sorting.xml',)
@@ -245,21 +248,4 @@ class SortedArticlesTestCase(TestCase):
         self.failUnlessEqual(articles[0].sort, 30)
         self.failUnlessEqual(articles[1].sort, 20)
         self.failUnlessEqual(articles[2].sort, 10)
-
-
-class ContactEmailTest(TestCase):
-
-    def test_send_email(self):
-        'Send an email via the contact form and verify it reaches the mailbox'
-        mail_url = reverse('mingus.cms.views.contact')
-
-        response = self.client.post(mail_url, {'first_name': 'Test',
-                                               'last_name': 'Case',
-                                               'email': 'test@artran.co.uk',
-                                               'telephone': '0123456789',
-                                               'comments': 'Test comments'})
-
-        # Test that one message has been sent.
-        self.assertEquals(len(mail.outbox), 1)
-        self.failUnlessEqual(response.status_code, 200,
-                'Status code was %s, should be 200' % response.status_code)
+        '''
