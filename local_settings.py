@@ -73,8 +73,6 @@ INSTALLED_APPS = (
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-#TEST_RUNNER = 'django_nose.run_tests'
-#NOSE_ARGS = ('-w %s/' % DIRNAME,)
-NOSE_ARGS = ('-w/Users/ray/pyProjects/mingus/',)
+NOSE_ARGS = ('-w%s/' % DIRNAME,)
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
