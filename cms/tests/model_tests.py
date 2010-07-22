@@ -31,44 +31,32 @@ class LiveArticleTestCase(TestCase):
         user.save()
 
         # Live article in not live section
-        nl1 = Article(title='lanls', body='', slug='lanls',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        nl1 = Article(title='lanls', slug='lanls',
                         section=sec_not_live)
         nl1.save()
 
         # Not live article in not live section
-        nl2 = Article(title='nlanls', body='', slug='nlanls',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        nl2 = Article(title='nlanls', slug='nlanls',
                         live_to=ten_ago, section=sec_not_live)
         nl2.save()
 
         # Not live article in live section
-        nl3 = Article(title='nlals', body='', slug='nlals',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        nl3 = Article(title='nlals', slug='nlals',
                         live_to=ten_ago, section=sec_live)
         nl3.save()
 
         # Live article in live section
-        l1 = Article(title='lals', body='', slug='lals',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        l1 = Article(title='lals', slug='lals',
                         section=sec_live)
         l1.save()
 
         # Live article by date in live section
-        l2 = Article(title='lals2', body='', slug='lals2',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        l2 = Article(title='lals2', slug='lals2',
                         live_from=ten_ago, live_to=ten_future, section=sec_live)
         l2.save()
 
         # Not live yet article in live section
-        nl4 = Article(title='nlyals', body='', slug='nlyals',
-                        created_by=user, created_at=now,
-                        last_edited_by=user, last_edited_at=now,
+        nl4 = Article(title='nlyals', slug='nlyals',
                         live_from=ten_future, section=sec_live)
         nl4.save()
         return {'nl1': nl1, 'nl2': nl2, 'nl3': nl3, 'nl4': nl4, 'l1': l1, 'l2': l2}
@@ -79,19 +67,19 @@ class LiveArticleTestCase(TestCase):
 
     def testNoContent(self):
         'Check 404 for the index view if the database is empty'
-        art_url = reverse('mingus.views.index')
+        art_url = reverse('mingus.cms.views.index')
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s instead of 404 for empty index.' % response.status_code)
 
     def testNoSuchSection(self):
         "Check 404 for a section which isn't in the db"
-        art_url = reverse('mingus.views.section', kwargs={'slug': 'doesnotexist'})
+        art_url = reverse('mingus.cms.views.section', kwargs={'slug': 'doesnotexist'})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s instead of 404 for non-existant section.' % response.status_code)
 
     def testNoSuchArticle(self):
         "Check 404 for an article which isn't in the db"
-        art_url = reverse('mingus.views.article', kwargs={'slug': 'doesnotexist'})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'doesnotexist'})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s for non-existant page.' % response.status_code)
 
@@ -125,7 +113,7 @@ class LiveArticleTestCase(TestCase):
         self._create_default_sections()
         articles = self._create_default_articles()
 
-        art_url = reverse('mingus.views.article', kwargs={'slug': articles['l1'].slug})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': articles['l1'].slug})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 200, 'Got status %s for live page.' % response.status_code)
 
@@ -134,7 +122,7 @@ class LiveArticleTestCase(TestCase):
         self._create_default_sections()
         articles = self._create_default_articles()
 
-        art_url = reverse('mingus.views.article', kwargs={'slug': articles['nl1'].slug})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': articles['nl1'].slug})
         response = self.client.get(art_url)
         self.failUnless(response.status_code == 404, 'Got %s for non-live page.' % response.status_code)
 
@@ -155,7 +143,7 @@ class SecureArticleTestCase(TestCase):
     def test_not_auth(self):
         'Get the sections; secure_sec should be missing'
 
-        url = reverse('mingus.views.index')
+        url = reverse('mingus.cms.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
         response = self.client.get(url, follow=True)
@@ -166,7 +154,7 @@ class SecureArticleTestCase(TestCase):
     def test_insecure(self):
         'Login as user in insecure group and get the sections; secure_sec should be missing'
 
-        url = reverse('mingus.views.index')
+        url = reverse('mingus.cms.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
         self.client.login(username='user-insecure', password='password')
@@ -178,7 +166,7 @@ class SecureArticleTestCase(TestCase):
     def test_insecure_article(self):
         'Get an article from secure_sec; it should 404'
 
-        art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'sec_art'})
 
         response = self.client.get(art_url)
         self.failUnlessEqual(response.status_code, 404, 'Secure article returned for insecure user')
@@ -186,7 +174,7 @@ class SecureArticleTestCase(TestCase):
     def test_secure_sec(self):
         'Login as user in secure group and get the sections; secure_sec should be present'
 
-        url = reverse('mingus.views.index')
+        url = reverse('mingus.cms.views.index')
         secure_sec = Section.objects.get(slug='section-secure')
 
         self.client.login(username='user-secure', password='password')
@@ -198,7 +186,7 @@ class SecureArticleTestCase(TestCase):
     def test_secure_article(self):
         'Get an article from secure_sec; it should be present'
 
-        art_url = reverse('mingus.views.article', kwargs={'slug': 'sec_art'})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'sec_art'})
 
         self.client.login(username='user-secure', password='password')
         response = self.client.get(art_url)
@@ -221,7 +209,7 @@ class ArticleBannerImageTestCase(TestCase):
 
     def test_article_with_image(self):
         'Get an article which has a banner image. The image should be in the context'
-        art_url = reverse('mingus.views.article', kwargs={'slug': 'banner_art'})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'banner_art'})
 
         response = self.client.get(art_url)
         self.failUnlessEqual(response.context['banner_image'].slug, 'banner_image',
@@ -229,7 +217,7 @@ class ArticleBannerImageTestCase(TestCase):
 
     def test_article_without_banner_image(self):
         'Get an article which has no banner image. The context should contain None'
-        art_url = reverse('mingus.views.article', kwargs={'slug': 'no_banner_art'})
+        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'no_banner_art'})
 
         response = self.client.get(art_url)
         self.failUnlessEqual(response.context['banner_image'], None,
@@ -241,7 +229,7 @@ class SortedArticlesTestCase(TestCase):
     fixtures = ('test-sorting.xml',)
 
     def test_sorted_articles(self):
-        sorted_sect_url = reverse('mingus.views.section', kwargs={'slug': 'sorted'})
+        sorted_sect_url = reverse('mingus.cms.views.section', kwargs={'slug': 'sorted'})
         response = self.client.get(sorted_sect_url, follow=True)
         articles = response.context['in_this_section']
         self.failUnlessEqual(response.status_code, 200)
@@ -250,7 +238,7 @@ class SortedArticlesTestCase(TestCase):
         self.failUnlessEqual(articles[2].sort, 30)
 
     def test_default_sorting(self):
-        unsorted_sect_url = reverse('mingus.views.section', kwargs={'slug': 'unsorted'})
+        unsorted_sect_url = reverse('mingus.cms.views.section', kwargs={'slug': 'unsorted'})
         response = self.client.get(unsorted_sect_url, follow=True)
         articles = response.context['in_this_section']
         self.failUnlessEqual(response.status_code, 200)
@@ -263,7 +251,7 @@ class ContactEmailTest(TestCase):
 
     def test_send_email(self):
         'Send an email via the contact form and verify it reaches the mailbox'
-        mail_url = reverse('mingus.views.contact')
+        mail_url = reverse('mingus.cms.views.contact')
 
         response = self.client.post(mail_url, {'first_name': 'Test',
                                                'last_name': 'Case',
