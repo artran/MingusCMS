@@ -1,157 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <django-objects version="1.0">
-  <object pk="1" model="mingus.section">
+  <object pk="1" model="cms.section">
     <field type="CharField" name="name">sorted</field>
     <field type="BooleanField" name="live">True</field>
     <field type="SlugField" name="slug">sorted</field>
-    <field type="FileField" name="block_img"/>
-    <field type="FileField" name="thumbnail_img"/>
     <field type="SmallIntegerField" name="sort">10</field>
-    <field type="BooleanField" name="sort_articles">True</field>
-    <field to="mingus.section" name="parent" rel="ManyToOneRel">
+    <field to="cms.section" name="parent" rel="ManyToOneRel">
       <None/>
     </field>
     <field to="auth.group" name="allowed_groups" rel="ManyToManyRel"/>
-  </object>
-  <object pk="2" model="mingus.section">
-    <field type="CharField" name="name">unsorted</field>
-    <field type="BooleanField" name="live">True</field>
-    <field type="SlugField" name="slug">unsorted</field>
-    <field type="FileField" name="block_img"/>
-    <field type="FileField" name="thumbnail_img"/>
-    <field type="SmallIntegerField" name="sort">10</field>
-    <field type="BooleanField" name="sort_articles">False</field>
-    <field to="mingus.section" name="parent" rel="ManyToOneRel">
-      <None/>
-    </field>
-    <field to="auth.group" name="allowed_groups" rel="ManyToManyRel"/>
-  </object>
-  <object pk="1" model="mingus.article">
-    <field type="CharField" name="title">usort10</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
-    <field type="DateTimeField" name="live_from">
-      <None/>
-    </field>
-    <field type="DateTimeField" name="live_to">
-      <None/>
-    </field>
-    <field type="BooleanField" name="feature">False</field>
-    <field type="BooleanField" name="home_page">False</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
-    <field type="SlugField" name="slug">usort10</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">2</field>
-    <field type="SmallIntegerField" name="sort">10</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
-  </object>
-  <object pk="2" model="mingus.article">
-    <field type="CharField" name="title">usort30</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
-    <field type="DateTimeField" name="live_from">
-      <None/>
-    </field>
-    <field type="DateTimeField" name="live_to">
-      <None/>
-    </field>
-    <field type="BooleanField" name="feature">False</field>
-    <field type="BooleanField" name="home_page">True</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
-    <field type="SlugField" name="slug">usort30</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">2</field>
-    <field type="SmallIntegerField" name="sort">30</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
-  </object>
-  <object pk="3" model="mingus.article">
-    <field type="CharField" name="title">usort20</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
-    <field type="DateTimeField" name="live_from">
-      <None/>
-    </field>
-    <field type="DateTimeField" name="live_to">
-      <None/>
-    </field>
-    <field type="BooleanField" name="feature">True</field>
-    <field type="BooleanField" name="home_page">False</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
-    <field type="SlugField" name="slug">usort20</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">2</field>
-    <field type="SmallIntegerField" name="sort">20</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
   </object>
 
-  <object pk="4" model="mingus.article">
+  <object pk="4" model="cms.article">
     <field type="CharField" name="title">sort10</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
     <field type="DateTimeField" name="live_from">
       <None/>
     </field>
     <field type="DateTimeField" name="live_to">
       <None/>
     </field>
-    <field type="BooleanField" name="feature">False</field>
-    <field type="BooleanField" name="home_page">False</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
     <field type="SlugField" name="slug">sort10</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">1</field>
+    <field to="cms.section" name="section" rel="ManyToOneRel">1</field>
     <field type="SmallIntegerField" name="sort">10</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
+    <field to="cms.article" name="related" rel="ManyToManyRel"/>
   </object>
-  <object pk="5" model="mingus.article">
+  <object pk="5" model="cms.article">
     <field type="CharField" name="title">sort30</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
     <field type="DateTimeField" name="live_from">
       <None/>
     </field>
     <field type="DateTimeField" name="live_to">
       <None/>
     </field>
-    <field type="BooleanField" name="feature">False</field>
-    <field type="BooleanField" name="home_page">True</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
     <field type="SlugField" name="slug">sort30</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">1</field>
+    <field to="cms.section" name="section" rel="ManyToOneRel">1</field>
     <field type="SmallIntegerField" name="sort">30</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
+    <field to="cms.article" name="related" rel="ManyToManyRel"/>
   </object>
-  <object pk="6" model="mingus.article">
+  <object pk="6" model="cms.article">
     <field type="CharField" name="title">sort20</field>
-    <field type="TextField" name="body"/>
-    <field type="TextField" name="style"/>
     <field type="DateTimeField" name="live_from">
       <None/>
     </field>
     <field type="DateTimeField" name="live_to">
       <None/>
     </field>
-    <field type="BooleanField" name="feature">True</field>
-    <field type="BooleanField" name="home_page">False</field>
-    <field type="DateTimeField" name="created_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="created_by" rel="ManyToOneRel">1</field>
-    <field type="DateTimeField" name="last_edited_at">2010-05-01 19:26:03</field>
-    <field to="auth.user" name="last_edited_by" rel="ManyToOneRel">1</field>
     <field type="SlugField" name="slug">sort20</field>
-    <field to="mingus.section" name="section" rel="ManyToOneRel">1</field>
+    <field to="cms.section" name="section" rel="ManyToOneRel">1</field>
     <field type="SmallIntegerField" name="sort">20</field>
-    <field to="mingus.article" name="related" rel="ManyToManyRel"/>
+    <field to="cms.article" name="related" rel="ManyToManyRel"/>
   </object>
 
   <object pk="22" model="auth.permission">

@@ -194,7 +194,6 @@ class SecureArticleTestCase(TestCase):
                 'Secure article not returned for secure user')
 
 
-'''
 class SortedArticlesTestCase(TestCase):
 
     fixtures = ('test-sorting.xml',)
@@ -207,13 +206,3 @@ class SortedArticlesTestCase(TestCase):
         self.failUnlessEqual(articles[0].sort, 10)
         self.failUnlessEqual(articles[1].sort, 20)
         self.failUnlessEqual(articles[2].sort, 30)
-
-    def test_default_sorting(self):
-        unsorted_sect_url = reverse('mingus.cms.views.section', kwargs={'slug': 'unsorted'})
-        response = self.client.get(unsorted_sect_url, follow=True)
-        articles = response.context['in_this_section']
-        self.failUnlessEqual(response.status_code, 200)
-        self.failUnlessEqual(articles[0].sort, 30)
-        self.failUnlessEqual(articles[1].sort, 20)
-        self.failUnlessEqual(articles[2].sort, 10)
-        '''

@@ -47,7 +47,7 @@ def article(request, slug):
     return render_to_response('cms/article.html', {'sections': sections,
                                                       'article': article,
                                                       'active_section': active,
+                                                      'in_this_section': in_this_section,
                                                       'related': related,
-                                                      'session': request.session,
                                                       'lang': request.LANGUAGE_CODE},
                                                       context_instance=RequestContext(request))
