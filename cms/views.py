@@ -44,7 +44,7 @@ def article(request, slug):
     active = article.section
     while active.parent:
         active = active.parent
-    return render_to_response('mingus/article.html', {'sections': sections,
+    return render_to_response('cms/article.html', {'sections': sections,
                                                       'article': article,
                                                       'active_section': active,
                                                       'related': related,
