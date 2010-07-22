@@ -195,38 +195,6 @@ class SecureArticleTestCase(TestCase):
 
 
 '''
-class ArticleBannerImageTestCase(TestCase):
-
-    fixtures = ('test-banner.xml',)
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        Article.objects.all().delete()
-        Section.objects.all().delete()
-        User.objects.all().delete()
-        ArticleImage.objects.all().delete()
-
-    def test_article_with_image(self):
-        'Get an article which has a banner image. The image should be in the context'
-        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'banner_art'})
-
-        response = self.client.get(art_url)
-        self.failUnlessEqual(response.context['banner_image'].slug, 'banner_image',
-                'No banner image returned')
-
-    def test_article_without_banner_image(self):
-        'Get an article which has no banner image. The context should contain None'
-        art_url = reverse('mingus.cms.views.article', kwargs={'slug': 'no_banner_art'})
-
-        response = self.client.get(art_url)
-        self.failUnlessEqual(response.context['banner_image'], None,
-                'Banner image should be None')
-                '''
-
-
-'''
 class SortedArticlesTestCase(TestCase):
 
     fixtures = ('test-sorting.xml',)
