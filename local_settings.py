@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
@@ -10,6 +11,8 @@ ADMINS = (
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+if DEBUG:
+    logging.basicConfig(level=logging.DEBUG)
 
 MANAGERS = ADMINS
 
@@ -54,6 +57,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -68,6 +72,7 @@ INSTALLED_APPS = (
     'mingus.cms',
     'mingus.contact',
     'django_extensions',
+    'debug_toolbar',
     'south',
     'django_nose', # must stay after south
 )
