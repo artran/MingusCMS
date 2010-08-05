@@ -105,7 +105,11 @@ class TransSection(models.Model):
 
 
 class PageTemplate(models.Model):
-    tmpl = models.FileField(upload_to='cms_templates')
+    name = models.CharField(max_length=60, unique=True)
+    tmpl = models.FileField(upload_to='cms_templates', verbose_name='template')
+
+    def __unicode__(self):
+        return self.name
 
     def render(self):
         ''' Turn the template content into HTML resolving variables and tags as it goes.'''
