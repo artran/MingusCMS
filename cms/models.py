@@ -143,6 +143,7 @@ class AbstractMedia(models.Model):
 
 class Image(AbstractMedia):
     image = models.ImageField(upload_to='cms_images', width_field='width', height_field='height')
+    alt_text = models.CharField(max_length=50, blank=True)
     height = models.IntegerField(blank=True)
     width = models.IntegerField(blank=True)
 
