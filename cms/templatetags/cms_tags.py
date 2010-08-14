@@ -1,43 +1,56 @@
 from django import template
 from django.conf import settings
 
-import re
-
 from mingus.cms.models import *
-
-image_match_regex = re.compile(r'{{\s*IMAGE\[[\w-]*\]\s*}}')
-slug_match_regex = re.compile(r'\[([\w-]*)\]')
 
 register = template.Library()
 
 
-@register.filter
-def add_images(article, lang=settings.LANGUAGE_CODE):
-    '''
-    Gets the translated body text and goes through it resolving {{ IMAGE[<SLUG>] }} into the correct url for the image
-    with slug=<SLUG>
-    '''
-    body = article.get_i18n_body(lang)
-    matches = image_match_regex.finditer(body)
-    if matches:
-        images = article.images.all()
+@register.simple_tag
+def image_from_slug(slug, article):
+    'Return an img tag for the Image identified by the given slug for the given article'
+    try:
+        image = Image.get(slug=slug)
+        image_url = image.get_absolute_url()
+    except AssertionError:
+        logging.warning('Multiple images found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        image_url = 'MultipleImagesExist'
+    except Image.DoesNotExist:
+        logging.warning('No images with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        image_url = 'NoImageFound'
+    return u'<img href="%s" alt="%s" title="%s"/>' % (image_url, image.alt_text, image.caption)
+image_from_slug.is_safe = True
 
-        # To manipulate the body text safely we need to reverse the iterator
-        for match in reversed(list(matches)):
-            slug = slug_match_regex.search(match.group()).group(1)
-            try:
-                image = images.get(slug=slug)
-                image_url = image.get_absolute_url()
-            except AssertionError:
-                print 'Multiple images found with the slug %s' % slug
-                image_url = 'MultipleImagesExist'
-            except ArticleImage.DoesNotExist:
-                print 'No images with the slug "%s" related to article with slug "%s"' % (slug, article.slug)
-                image_url = 'NoImageFound'
 
-            body = body[:match.start()] + image_url + body[match.end():]
-    return body
-add_images.is_safe = True
+@register.simple_tag
+def media_from_slug(slug, article):
+    'Return a url for the Media identified by the given slug for the given article'
+    try:
+        media = Media.get(slug=slug)
+        media_url = media.get_absolute_url()
+    except AssertionError:
+        logging.warning('Multiple media found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        media_url = 'MultipleMediaExist'
+    except Media.DoesNotExist:
+        logging.warning('No media with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        media_url = 'NoMediaFound'
+    return media_url
+media_from_slug.is_safe = True
+
+
+@register.simple_tag
+def text_from_slug(slug, article):
+    'Return the text from the TextChunk identified by the given slug for the given article'
+    try:
+        chunk = TextChunk.get(slug=slug, live=True)
+        text = chunk.body
+    except AssertionError:
+        logging.warning('Multiple TextChunk found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        text = 'Multiple TextChunks match'
+    except TextChunk.DoesNotExist:
+        logging.warning('No TextChunk with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        text = 'No TextChunks match'
+    return text
 
 
 @register.filter
