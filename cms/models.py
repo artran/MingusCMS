@@ -130,9 +130,6 @@ class AbstractMedia(models.Model):
             self.slug = slugify(self.name)
         super(AbstractMedia, self).save()
 
-    def get_absolute_url(self):
-        return self.image.url
-
     def __unicode__(self):
         return self.name
 
@@ -147,10 +144,16 @@ class Image(AbstractMedia):
     height = models.IntegerField(blank=True)
     width = models.IntegerField(blank=True)
 
+    def get_absolute_url(self):
+        return self.image.url
+
 
 class Media(AbstractMedia):
     media_file = models.FileField(upload_to='cms_media')
     mime_type = models.CharField(max_length=25)
+
+    def get_absolute_url(self):
+        return self.media_file.url
 
 
 class TextChunk(models.Model):
