@@ -1,6 +1,8 @@
 from django import template
 from django.conf import settings
 
+import logging
+
 from mingus.cms.models import *
 
 register = template.Library()
@@ -10,15 +12,17 @@ register = template.Library()
 def image_from_slug(slug, article):
     'Return an img tag for the Image identified by the given slug for the given article'
     try:
-        image = Image.get(slug=slug)
+        art_img = ArticleImage.objects.get(slug=slug, article=article)
+        image = art_img.image
         image_url = image.get_absolute_url()
-    except AssertionError:
-        logging.warning('Multiple images found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
-        image_url = 'MultipleImagesExist'
-    except Image.DoesNotExist:
-        logging.warning('No images with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        image_alt_text = image.alt_text
+        image_caption = image.caption
+    except ArticleImage.DoesNotExist:
+        logging.warning('No images with the slug "%s" related to article "%s"' % (slug, article))
         image_url = 'NoImageFound'
-    return u'<img href="%s" alt="%s" title="%s"/>' % (image_url, image.alt_text, image.caption)
+        image_alt_text = 'NoImageFound'
+        image_caption = 'NoImageFound'
+    return u'<img href="%s" alt="%s" title="%s"/>' % (image_url, image_alt_text, image_caption)
 image_from_slug.is_safe = True
 
 
@@ -26,7 +30,7 @@ image_from_slug.is_safe = True
 def media_from_slug(slug, article):
     'Return a url for the Media identified by the given slug for the given article'
     try:
-        media = Media.get(slug=slug)
+        media = Media.get(slug=slug, article=article)
         media_url = media.get_absolute_url()
     except AssertionError:
         logging.warning('Multiple media found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
@@ -42,7 +46,7 @@ media_from_slug.is_safe = True
 def text_from_slug(slug, article):
     'Return the text from the TextChunk identified by the given slug for the given article'
     try:
-        chunk = TextChunk.get(slug=slug, live=True)
+        chunk = TextChunk.get(slug=slug, article=article, live=True)
         text = chunk.body
     except AssertionError:
         logging.warning('Multiple TextChunk found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
