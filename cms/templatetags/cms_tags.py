@@ -18,7 +18,7 @@ def image_from_slug(slug, article):
         image_alt_text = image.alt_text
         image_caption = image.caption
     except ArticleImage.DoesNotExist:
-        logging.warning('No images with the slug "%s" related to article "%s"' % (slug, article))
+        logging.warning('No ArticleImage with the slug "%s" related to article "%s"' % (slug, article))
         image_url = 'NoImageFound'
         image_alt_text = 'NoImageFound'
         image_caption = 'NoImageFound'
@@ -30,13 +30,10 @@ image_from_slug.is_safe = True
 def media_from_slug(slug, article):
     'Return a url for the Media identified by the given slug for the given article'
     try:
-        media = Media.get(slug=slug, article=article)
-        media_url = media.get_absolute_url()
-    except AssertionError:
-        logging.warning('Multiple media found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
-        media_url = 'MultipleMediaExist'
-    except Media.DoesNotExist:
-        logging.warning('No media with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        art_media = ArticleMedia.objects.get(slug=slug, article=article)
+        media_url = art_media.media.get_absolute_url()
+    except ArticleMedia.DoesNotExist:
+        logging.warning('No ArticleMedia with the slug "%s" related to article "%s"' % (slug, article))
         media_url = 'NoMediaFound'
     return media_url
 media_from_slug.is_safe = True
@@ -46,13 +43,10 @@ media_from_slug.is_safe = True
 def text_from_slug(slug, article):
     'Return the text from the TextChunk identified by the given slug for the given article'
     try:
-        chunk = TextChunk.get(slug=slug, article=article, live=True)
-        text = chunk.body
-    except AssertionError:
-        logging.warning('Multiple TextChunk found with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
-        text = 'Multiple TextChunks match'
-    except TextChunk.DoesNotExist:
-        logging.warning('No TextChunk with the slug "%s" related to article with slug "%s"' % (slug, article.slug))
+        article_tc = ArticleTextChunk.objects.get(slug=slug, article=article)
+        text = article_tc.text_chunk.body
+    except ArticleTextChunk.DoesNotExist:
+        logging.warning('No ArticleTextChunk with the slug "%s" related to article "%s"' % (slug, article.slug))
         text = 'No TextChunks match'
     return text
 
