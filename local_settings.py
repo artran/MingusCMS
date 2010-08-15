@@ -81,3 +81,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ('-w%s/' % DIRNAME,)
 
 CONTACT_RECIPIENTS = ('ray@artran.co.uk',)
+
+# Shut up the excessively verbose south and nose
+import logging
+import south.logger
+logging.getLogger('south').setLevel(logging.CRITICAL)
+logging.getLogger('nose').setLevel(logging.CRITICAL)
