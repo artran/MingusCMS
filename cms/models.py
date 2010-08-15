@@ -158,7 +158,6 @@ class Media(AbstractMedia):
 
 class TextChunk(models.Model):
     body = models.TextField(blank=True)
-    live = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.body[:20]

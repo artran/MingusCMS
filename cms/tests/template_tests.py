@@ -90,9 +90,7 @@ class TextTagTest(TestCase):
     BODY_TEXT = 'Body text for test TextChunk'
 
     def setUp(self):
-        txt = TextChunk.objects.create(
-            body=self.BODY_TEXT, live=True,
-        )
+        txt = TextChunk.objects.create(body=self.BODY_TEXT)
 
         section = Section.objects.create(
             name='sect', slug='sect_slug', sort=10, live=True,
