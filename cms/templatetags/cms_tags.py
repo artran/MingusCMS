@@ -9,7 +9,7 @@ register = template.Library()
 
 
 @register.simple_tag
-def image_from_slug(slug, article):
+def image_from_slug(slug, article, tag_end):
     'Return an img tag for the Image identified by the given slug for the given article'
     try:
         art_img = ArticleImage.objects.get(slug=slug, article=article)
@@ -22,7 +22,7 @@ def image_from_slug(slug, article):
         image_url = 'NoImageFound'
         image_alt_text = 'NoImageFound'
         image_caption = 'NoImageFound'
-    return u'<img href="%s" alt="%s" title="%s"/>' % (image_url, image_alt_text, image_caption)
+    return u'<img href="%s" alt="%s" title="%s"%s' % (image_url, image_alt_text, image_caption, tag_end)
 image_from_slug.is_safe = True
 
 
