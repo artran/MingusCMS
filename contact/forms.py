@@ -17,8 +17,11 @@ class ContactForm(forms.Form):
         for element in elements:
             el_type = element.element.field
 
+            # Make sure to also update the list in models to match.
             if el_type == 'char':
                 field = forms.CharField(max_length=25)
+            elif el_type == 'text':
+                field = forms.TextField()
             elif el_type == 'email':
                 field = forms.EmailField()
             elif el_type == 'bool':

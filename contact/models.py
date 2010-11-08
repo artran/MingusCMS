@@ -3,8 +3,11 @@ from django.db import models
 
 class Element(models.Model):
     'A component of a contact form.'
+
+    # Make sure to also update the forms.ContactForm constructor to match.
     ELEMENT_CHOICES = (
         ('char', 'CharField'),
+        ('text', 'TextField'),
         ('email', 'EmailField'),
         ('bool', 'BooleanField'),
         ('date', 'DateField'),
