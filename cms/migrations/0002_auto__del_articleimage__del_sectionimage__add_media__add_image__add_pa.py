@@ -182,7 +182,6 @@ class Migration(SchemaMigration):
         # Deleting field 'TransSection.name'
         db.delete_column('cms_transsection', 'name')
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

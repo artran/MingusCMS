@@ -173,7 +173,6 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'SectionImage', fields ['slug', 'section']
         db.delete_unique('cms_sectionimage', ['slug', 'section_id'])
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

@@ -29,7 +29,6 @@ class Migration(SchemaMigration):
         # Changing field 'Image.width'
         db.alter_column('cms_image', 'width', self.gf('django.db.models.fields.IntegerField')())
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

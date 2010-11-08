@@ -57,7 +57,7 @@ class Section(models.Model):
     allowed_groups = models.ManyToManyField(Group, blank=True)
 
     # Managers
-    objects = models.Manager() # If this isn't first then non-live sections can't edited in the admin interface
+    objects = models.Manager()  # If this isn't first then non-live sections can't edited in the admin interface
     live_objects = LiveSectionManager()
 
     @staticmethod
@@ -182,7 +182,7 @@ class Article(models.Model):
     sort = models.SmallIntegerField(default=1000, null=True, blank=True, help_text='Lower numbers sort earlier.')
 
     # Managers
-    objects = models.Manager() # If this isn't first then non-live articles can't edited in the admin interface
+    objects = models.Manager()  # If this isn't first then non-live articles can't edited in the admin interface
     live_objects = LiveArticleManager()
 
     def get_i18n_title(self, language_code):

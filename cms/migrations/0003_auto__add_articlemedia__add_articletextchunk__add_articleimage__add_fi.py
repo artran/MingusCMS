@@ -53,7 +53,6 @@ class Migration(SchemaMigration):
         # Deleting field 'Article.template'
         db.delete_column('cms_article', 'template_id')
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

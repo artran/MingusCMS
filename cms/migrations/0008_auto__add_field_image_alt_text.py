@@ -17,7 +17,6 @@ class Migration(SchemaMigration):
         # Deleting field 'Image.alt_text'
         db.delete_column('cms_image', 'alt_text')
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

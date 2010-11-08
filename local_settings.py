@@ -74,7 +74,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'debug_toolbar',
     'south',
-    'django_nose', # must stay after south
+    'django_nose',  # must stay after south
 )
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'

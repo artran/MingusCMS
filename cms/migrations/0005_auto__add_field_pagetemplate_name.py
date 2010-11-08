@@ -17,7 +17,6 @@ class Migration(SchemaMigration):
         # Deleting field 'PageTemplate.name'
         db.delete_column('cms_pagetemplate', 'name')
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

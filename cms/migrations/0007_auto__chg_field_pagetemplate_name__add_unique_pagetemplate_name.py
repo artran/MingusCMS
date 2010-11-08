@@ -23,7 +23,6 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'PageTemplate', fields ['name']
         db.delete_unique('cms_pagetemplate', ['name'])
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

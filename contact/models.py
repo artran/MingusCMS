@@ -29,10 +29,11 @@ class ContactFormModel(models.Model):
     'A collection of form elements that know where to post to.'
 
     name = models.CharField(max_length=20, unique=True, help_text='Memorable name for the form.')
-    form_template = models.TextField(help_text='Template code to produce the form.')
+    form_template = models.TextField(help_text='Template code to produce the form. The context contains "form"')
     recipient_list = models.TextField(help_text='Comma separated list of recipients.')
-    subject_template = models.CharField(max_length=100, help_text='Template code to produce the email subject line.')
-    body_template = models.TextField(help_text='Template code to produce the email body.')
+    subject_template = models.CharField(max_length=100, help_text='Template code to produce the email subject line. The context contains "post".')
+    body_template = models.TextField(help_text='Template code to produce the email body. The context contains "post".')
+    success_template = models.TextField(help_text='Template code to produce thank you page. The context is empty.')
     elements = models.ManyToManyField(Element, related_name='form', through='ContactFormElements')
     live = models.BooleanField(default=False)
 

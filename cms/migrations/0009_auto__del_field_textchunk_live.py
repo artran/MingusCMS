@@ -17,7 +17,6 @@ class Migration(SchemaMigration):
         # Adding field 'TextChunk.live'
         db.add_column('cms_textchunk', 'live', self.gf('django.db.models.fields.BooleanField')(default=True, blank=True), keep_default=False)
 
-
     models = {
         'auth.group': {
             'Meta': {'object_name': 'Group'},

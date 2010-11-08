@@ -54,7 +54,6 @@ class Migration(SchemaMigration):
         # Deleting model 'ContactFormElements'
         db.delete_table('contact_contactformelements')
 
-
     models = {
         'contact.contactformelements': {
             'Meta': {'object_name': 'ContactFormElements'},
