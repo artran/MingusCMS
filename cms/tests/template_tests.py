@@ -41,12 +41,20 @@ class ImageTagTest(TestCase):
         'Make sure image_from_slug gets correct image and fails gracefully'
 
         article = Article.objects.get(slug='article_slug')
-        t = Template('{% load cms_tags %}{% image_from_slug slug article %}')
+        t = Template('{% load cms_tags %}{% image_from_slug slug article ""%}')
         c = Context({'slug': 'slug-wont-match', 'article': article})
         self.assertNotEqual(t.render(c).find('NoImageFound'), -1)
 
         c = Context({'slug': 'ai-slug', 'article': article})
         self.assertNotEqual(t.render(c).find(self.IMAGE_FILE.split('/')[-1]), -1)
+
+    def test_close_tag(self):
+        'Make sure image_from_slug closes tag properly'
+
+        article = Article.objects.get(slug='article_slug')
+        t = Template('{% load cms_tags %}{% image_from_slug slug article  "/>"%}')
+        c = Context({'slug': 'am-slug', 'article': article})
+        self.assertNotEqual(t.render(c).find('/>'), -1)
 
 
 class MediaTagTest(TestCase):
@@ -107,7 +115,7 @@ class TextTagTest(TestCase):
     def tearDown(self):
         pass
 
-    def test_image_tag(self):
+    def test_text_tag(self):
         'Make sure text_from_slug gets correct text and fails gracefully'
 
         article = Article.objects.get(slug='article_slug')

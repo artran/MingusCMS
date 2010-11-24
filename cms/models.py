@@ -218,6 +218,8 @@ class TransArticle(models.Model):
     lang = models.ForeignKey(Language)
     article = models.ForeignKey(Article)
     title = models.CharField(max_length=100)
+    head_title = models.CharField(max_length=100, blank=True)
+    template = models.ForeignKey(PageTemplate, related_name='trans_articles', blank=True, null=True, help_text='The template used to render this translated article')
 
     class Meta:
         unique_together = ('lang', 'article')
