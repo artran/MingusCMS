@@ -7,8 +7,8 @@ from models import *
 
 class ContactForm(forms.Form):
 
-    def __init__(self, form_id, *args, **kwargs):
-        contact_form = get_object_or_404(ContactFormModel, pk=form_id)
+    def __init__(self, slug, *args, **kwargs):
+        contact_form = get_object_or_404(ContactFormModel, slug=slug)
 
         forms.Form.__init__(self, *args, **kwargs)
 
