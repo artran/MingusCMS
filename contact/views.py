@@ -7,10 +7,10 @@ from forms import ContactForm
 from models import *
 
 
-def contact(request, form_id):
+def contact(request, slug):
     if request.method == 'POST':  # If the form has been submitted...
-        form = ContactForm(slug, request.POST)  # Will raise 404 if form id is invalid
-        model = ContactFormModel.objects.get(slug=slug)  # We know it's a valid id
+        model = get_object_or_404(ContactFormModel, slug=slug)
+        form = ContactForm(model, request.POST)
 
         if form.is_valid():
             subject = render_to_string(model.subject_template, {'post': request.POST})
