@@ -29,7 +29,7 @@ class ContactFormModel(models.Model):
     'A collection of form elements that know where to post to.'
 
     name = models.CharField(max_length=20, unique=True, help_text='Memorable name for the form.')
-    slug = models.SlugField(prepopulate_from=("name",), unique=True, index=True)
+    slug = models.SlugField(unique=True, db_index=True)
     form_template = models.TextField(help_text='Template code to produce the form. The context contains "form"')
     recipient_list = models.TextField(help_text='Comma separated list of recipients.')
     subject_template = models.CharField(max_length=100, help_text='Template code to produce the email subject line. The context contains "post".')

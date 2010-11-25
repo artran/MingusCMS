@@ -12,6 +12,7 @@ class FormElementInline(admin.TabularInline):
 
 
 class ContactFormModelAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('name',)}
     inlines = (FormElementInline,)
 
 admin.site.register(Element, ElementAdmin)
